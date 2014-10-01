@@ -1,0 +1,20 @@
+{
+  "name": "videogular-questions",
+  "version": "0.1.0",
+  "authors": [
+    "Samuel Bennett <sb21g11@soton.ac.uk>"
+  ],
+  "description": "A quiz and poll overlay for Videogular",
+  "main": "questions.js",
+  "keywords": [
+    "videogular"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

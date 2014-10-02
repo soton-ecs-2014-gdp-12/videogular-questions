@@ -16,11 +16,6 @@ npm and nodejs should be availabile from your linux package manager.
 
 Once npm and nodejs is installed you can install bower with `npm install bower`
 
-Setup
------
-
-`npm install` can be run to install all depencies.
-
 Running
 =======
 

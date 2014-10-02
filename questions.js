@@ -7,9 +7,19 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 					restrict: "E",
 					require: "^videogular",
 					scope: {
-
+						theme: "=vgQuestionsTheme",
 					},
+					templateUrl: 'bower_components/videogular-questions/questions.html',
 					link: function(scope, elem, attr, API) {
+
+						//shamelessly stolen from part of videogular's updateTheme function 
+						scope.updateTheme = function (value) {
+							if (value) {
+								var headElem = angular.element(document).find("head");
+								headElem.append("<link rel='stylesheet' href='" + value + "'>");
+							}
+						};
+
 						scope.$watch(
 							function() {
 								return API.currentTime
@@ -20,6 +30,12 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 								}
 							}
 						);
+
+						scope.init = function () {
+							scope.updateTheme(scope.theme);
+						};
+
+						scope.init();
 					}
 
 				}

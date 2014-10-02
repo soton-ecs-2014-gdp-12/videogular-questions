@@ -27,11 +27,13 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 							function(newVal, oldVal){
 								if (newVal !== 0 && newVal.getTime()>10000){
 									API.pause();
+									scope.showLayer = true;
 								}
 							}
 						);
 
 						scope.init = function () {
+							scope.showLayer = false;
 							scope.updateTheme(scope.theme);
 						};
 

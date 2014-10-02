@@ -6,7 +6,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 				return {
 					restrict: "E",
 					require: "^videogular",
-					$scope: {
+					scope: {
 						theme: "=vgQuestionsTheme",
 					},
 					templateUrl: 'bower_components/videogular-questions/questions.html',

@@ -1,6 +1,38 @@
 "use strict";
 angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 	.directive(
+		"vgPoll", ["VG_STATES",
+			function(VG_EVENTS){
+				return {
+					restrict: "E",
+					require: "^videogular",
+					scope: {
+					},
+					templateUrl: 'bower_components/videogular-questions/poll.html',
+					link: function($scope, elem, attr, API) {
+					}
+
+				}
+			}
+		]
+	)
+	.directive(
+		"vgQuiz", ["VG_STATES",
+			function(VG_EVENTS){
+				return {
+					restrict: "E",
+					require: "^videogular",
+					scope: {
+					},
+					templateUrl: 'bower_components/videogular-questions/quiz.html',
+					link: function($scope, elem, attr, API) {
+					}
+
+				}
+			}
+		]
+	)
+	.directive(
 		"vgQuestions", ["VG_STATES",
 			function(VG_EVENTS){
 				return {
@@ -44,3 +76,4 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 			}
 		]
 	);
+	

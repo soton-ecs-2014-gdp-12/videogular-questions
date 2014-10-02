@@ -33,13 +33,14 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 		]
 	)
 	.directive(
-		"vgQuestions", ["VG_STATES",
-			function(VG_EVENTS){
+		"vgQuestions", ["VG_STATES", "$http",
+			function(VG_EVENTS, $http){
 				return {
 					restrict: "E",
 					require: "^videogular",
 					scope: {
 						theme: "=vgQuestionsTheme",
+						questions: "=vgQuestionsData"
 					},
 					templateUrl: 'bower_components/videogular-questions/questions.html',
 					link: function($scope, elem, attr, API) {
@@ -57,16 +58,25 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 								return API.currentTime
 							},
 							function(newVal, oldVal){
-								if (newVal !== 0 && newVal.getTime()>10000){
+								if (newVal !== 0 && newVal.getTime()>$scope.stopTime*1000){
 									API.pause();
 									$scope.showLayer = true;
 								}
 							}
 						);
 
-						$scope.init = function () {
+						$scope.parseQuestionData = function(data){
+							$scope.stopTime = data[0].time;
+						}
+
+						$scope.init = function() {
 							$scope.showLayer = false;
 							$scope.updateTheme($scope.theme);
+							$http.get($scope.questions).success( 
+								function(data){
+									$scope.parseQuestionData(data);
+								}
+							);
 						};
 
 						$scope.init();

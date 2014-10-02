@@ -6,38 +6,38 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 				return {
 					restrict: "E",
 					require: "^videogular",
-					scope: {
+					$scope: {
 						theme: "=vgQuestionsTheme",
 					},
 					templateUrl: 'bower_components/videogular-questions/questions.html',
-					link: function(scope, elem, attr, API) {
+					link: function($scope, elem, attr, API) {
 
 						//shamelessly stolen from part of videogular's updateTheme function 
-						scope.updateTheme = function (value) {
+						$scope.updateTheme = function (value) {
 							if (value) {
 								var headElem = angular.element(document).find("head");
 								headElem.append("<link rel='stylesheet' href='" + value + "'>");
 							}
 						};
 
-						scope.$watch(
+						$scope.$watch(
 							function() {
 								return API.currentTime
 							},
 							function(newVal, oldVal){
 								if (newVal !== 0 && newVal.getTime()>10000){
 									API.pause();
-									scope.showLayer = true;
+									$scope.showLayer = true;
 								}
 							}
 						);
 
-						scope.init = function () {
-							scope.showLayer = false;
-							scope.updateTheme(scope.theme);
+						$scope.init = function () {
+							$scope.showLayer = false;
+							$scope.updateTheme($scope.theme);
 						};
 
-						scope.init();
+						$scope.init();
 					}
 
 				}

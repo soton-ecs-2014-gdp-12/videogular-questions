@@ -7,15 +7,22 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 					restrict: "E",
 					require: "^videogular",
 					scope: {
-						pollData : "=vgPollData"
+						pollData: "=vgPollData",
+						onFinish: "=vgOnFinish",
 					},
 					templateUrl: 'bower_components/videogular-questions/poll.html',
 					link: function($scope, elem, attr, API) {
 						$scope.$watch('pollData', function(newVal, OldVal) {
 							//newVal is currently the time
-							$scope.question = newVal.questions[0].question;
-							$scope.options = newVal.questions[0].options;
-						})
+							if (typeof newVal !== 'undefined') {
+								$scope.question = newVal.questions[0].question;
+								$scope.options = newVal.questions[0].options;
+							}
+						});
+						$scope.onSubmitClick = function() {
+							console.log("onSubmitClick");
+							$scope.onFinish();
+						};
 					}
 				}
 			}
@@ -63,10 +70,11 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 								return API.currentTime
 							},
 							function(newVal, oldVal){
-								if (newVal !== 0 && newVal.getTime()>$scope.stopTime*1000){
+								if (newVal !== 0 && newVal.getTime()>$scope.stopTime*1000 && !$scope.shown){
 									API.pause();
 									$scope.pollData = $scope.dataStore[0];
 									$scope.showLayer = true;
+									$scope.shown = true;
 								}
 							}
 						);
@@ -78,6 +86,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 
 						$scope.init = function() {
 							$scope.showLayer = false;
+							$scope.shown = false;
 							$scope.updateTheme($scope.theme);
 							$http.get($scope.questions).success( 
 								function(data){
@@ -85,6 +94,12 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 								}
 							);
 						};
+
+						$scope.onFinish = function() {
+							console.log("onFinish");
+							$scope.showLayer = false;
+							API.play();
+						}
 
 						$scope.init();
 					}

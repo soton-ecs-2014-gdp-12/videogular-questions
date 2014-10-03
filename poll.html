@@ -15,7 +15,7 @@
 	<h1>Poll: {{question}}</h1>
 </div>
 
-<div id="poll-content">
+<div id="poll-content" ng-show="!voteSubmitted">
 	Pick one of the following items to vote:
 
 	<form name="myForm" >
@@ -28,4 +28,9 @@
 		<button class="btn btn-primary" type="button" ng-click="onSubmitClick()">Submit Vote</button>
 
 	</form>
+</div>
+
+<div id="poll-results" ng-if="voteSubmitted">
+	<div id="chart" class="chart" ac-chart="chartType" ac-data="results" ac-config="chartConfig"></div>
+	<button class="btn btn-primary" type="button" ng-click="onContinueClick()">Continue</button>
 </div>

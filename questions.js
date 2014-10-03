@@ -1,5 +1,5 @@
 "use strict";
-angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
+angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts'])
 	.directive(
 		"vgPoll", ["VG_STATES",
 			function(VG_EVENTS) {
@@ -12,6 +12,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 					},
 					templateUrl: 'bower_components/videogular-questions/poll.html',
 					link: function($scope, elem, attr, API) {
+						$scope.voteSubmitted = false; 
 						$scope.$watch('pollData', function(newVal, OldVal) {
 							//newVal is currently the time
 							if (typeof newVal !== 'undefined') {
@@ -20,9 +21,22 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 							}
 						});
 						$scope.onSubmitClick = function() {
-							console.log("onSubmitClick");
+							$scope.voteSubmitted = true;
+							$scope.results = {
+								data: $scope.options.map(function(option, i) {
+									return {
+										x: option,
+										y: [i + 2]
+									};
+								}),
+							};
+						};
+						$scope.onContinueClick = function() {
 							$scope.onFinish();
 						};
+
+						// Chart
+						$scope.chartType = 'bar';
 					},
 				};
 			}
@@ -95,7 +109,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 						};
 
 						$scope.onFinish = function() {
-							console.log("onFinish");
 							$scope.showLayer = false;
 							API.play();
 						};

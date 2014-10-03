@@ -18,10 +18,12 @@
 <div id="poll-content">
 	Select the following correct answer:
 
-	<form name="myForm" >
-		<span ng-repeat-start="option in options"></span>
-		<input type="radio" id="{{option}}" name="poll-form" value="{{option}}"><label for="{{option}}"> {{ option }}</label><br />
-		<span ng-repeat-end></span>
+	<form name="myForm">
+
+		<label data-ng-repeat="option in options">
+			<input name="poll-form" type="radio" ng-model="poll_data" value="{{option}}"> {{ option }} <br />
+		</label>
+
 		<br />
 		<button class="btn btn-primary" type="button" ng-click="onSubmitClick()">Check answer</button>
 

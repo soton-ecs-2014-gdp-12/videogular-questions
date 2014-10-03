@@ -7,11 +7,20 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 					restrict: "E",
 					require: "^videogular",
 					scope: {
+						data : "=vgPollData"
 					},
 					templateUrl: 'bower_components/videogular-questions/poll.html',
 					link: function($scope, elem, attr, API) {
+						$scope.$watch($scope.data, function(newVal, OldVal) {
+							//newVal is currently the time
+							$scope.question = "This is a faked question";
+							$scope.options = [
+								"blue",
+								"red",
+								"yellow"
+							];
+						})
 					}
-
 				}
 			}
 		]
@@ -60,6 +69,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 							function(newVal, oldVal){
 								if (newVal !== 0 && newVal.getTime()>$scope.stopTime*1000){
 									API.pause();
+									$scope.pollData = $scope.dataStore[0];
 									$scope.showLayer = true;
 								}
 							}
@@ -67,6 +77,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 
 						$scope.parseQuestionData = function(data){
 							$scope.stopTime = data[0].time;
+							$scope.dataStore = data;
 						}
 
 						$scope.init = function() {

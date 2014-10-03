@@ -2,7 +2,7 @@
 angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 	.directive(
 		"vgPoll", ["VG_STATES",
-			function(VG_EVENTS){
+			function(VG_EVENTS) {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -23,8 +23,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 							console.log("onSubmitClick");
 							$scope.onFinish();
 						};
-					}
-				}
+					},
+				};
 			}
 		]
 	)
@@ -38,15 +38,14 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 					},
 					templateUrl: 'bower_components/videogular-questions/quiz.html',
 					link: function($scope, elem, attr, API) {
-					}
-
-				}
+					},
+				};
 			}
 		]
 	)
 	.directive(
 		"vgQuestions", ["VG_STATES", "$http",
-			function(VG_EVENTS, $http){
+			function(VG_EVENTS, $http) {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -57,8 +56,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 					templateUrl: 'bower_components/videogular-questions/questions.html',
 					link: function($scope, elem, attr, API) {
 
-						//shamelessly stolen from part of videogular's updateTheme function 
-						$scope.updateTheme = function (value) {
+						// shamelessly stolen from part of videogular's updateTheme function
+						$scope.updateTheme = function(value) {
 							if (value) {
 								var headElem = angular.element(document).find("head");
 								headElem.append("<link rel='stylesheet' href='" + value + "'>");
@@ -67,10 +66,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 
 						$scope.$watch(
 							function() {
-								return API.currentTime
+								return API.currentTime;
 							},
-							function(newVal, oldVal){
-								if (newVal !== 0 && newVal.getTime()>$scope.stopTime*1000 && !$scope.shown){
+							function(newVal, oldVal) {
+								if (newVal !== 0 && newVal.getTime()>$scope.stopTime*1000 && !$scope.shown) {
 									API.pause();
 									$scope.pollData = $scope.dataStore[0];
 									$scope.showLayer = true;
@@ -79,17 +78,17 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 							}
 						);
 
-						$scope.parseQuestionData = function(data){
+						$scope.parseQuestionData = function(data) {
 							$scope.stopTime = data[0].time;
 							$scope.dataStore = data;
-						}
+						};
 
 						$scope.init = function() {
 							$scope.showLayer = false;
 							$scope.shown = false;
 							$scope.updateTheme($scope.theme);
-							$http.get($scope.questions).success( 
-								function(data){
+							$http.get($scope.questions).success(
+								function(data) {
 									$scope.parseQuestionData(data);
 								}
 							);
@@ -99,13 +98,12 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", [])
 							console.log("onFinish");
 							$scope.showLayer = false;
 							API.play();
-						}
+						};
 
 						$scope.init();
-					}
-
-				}
+					},
+				};
 			}
 		]
 	);
-	
+

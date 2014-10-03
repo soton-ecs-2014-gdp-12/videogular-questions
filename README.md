@@ -1,28 +1,4 @@
 
-Setup
-============
+This repository is a plugin for the videogular video player that allows quizs and polls during the playback of videos.
 
-Requirements
-------------
-
-* [nodejs](http://nodejs.org/) - Javascript platform built on chromes JavaScript runtime
-* [npm](https://www.npmjs.org/) - package manager for nodejs
-* [bower](http://bower.io/) - A package manger for the web
-
-Installation
-------------
-
-npm and nodejs should be availabile from your linux package manager.
-
-Once npm and nodejs is installed you can install bower with `npm install bower`
-
-Running
-=======
-
-Once installed the webserver can be run with `npm start`.
-By default the server is started on [http://localhost:8000](http://localhost:8000) and the app can be accessed by visiting the [/app](http://localhost:8000/app/) directory.
-
-The automated testing can be run with `npm test`.
-This requires google chrome with the default settings.
-
-
+See [videogular questions example](https://github.com/soton-ecs-2014-gdp-12/videogular-questions-example) repository for examples to use with this repsitory.

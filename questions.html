@@ -1,11 +1,4 @@
-<style type="text/css">
-	vg-quiz {
-		display: none;
-	}
-
-</style>
-
 <div class="my-layer" ng-show="showLayer">
-	<vg-quiz></vg-quiz>
-	<vg-poll vg-poll-data="pollData" vg-on-finish="onFinish"></vg-poll>
+	<vg-quiz ng-show="!showLayer"></vg-quiz>
+	<vg-poll ng-show="showLayer" vg-poll-data="pollData" vg-on-finish="onFinish"></vg-poll>
 </div>

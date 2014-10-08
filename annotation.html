@@ -1,0 +1,6 @@
+<div ng-repeat='question in questions'>
+	<div ng-switch="test(question)">
+		<vg-question ng-switch-when="question" ng-if='shouldRenderQuestion(question)' vg-question-data='question'></vg-question>
+		<vg-result ng-switch-when="result" ng-if='shouldRenderQuestion(question)' vg-question-data='question'></vg-result>
+	</div>
+</div>

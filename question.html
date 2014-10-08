@@ -1,0 +1,22 @@
+<div class="my-layer">
+
+	<div id="question-header">
+		<h1>Question: {{question}}</h1>
+	</div>
+
+	<div id="question-content">
+		Pick one of the following items to vote:
+
+		<form name="myForm" >
+
+			<label data-ng-repeat="option in options">
+				<input name="question-form" type="radio" ng-model="question_data" value="{{option}}"> {{ option }} <br />
+			</label>
+
+			<br />
+
+			<button class="btn btn-primary" type="button" ng-click="onSubmitClick()">Submit</button>
+
+		</form>
+	</div>
+</div>

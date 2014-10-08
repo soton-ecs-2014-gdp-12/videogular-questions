@@ -1,57 +1,66 @@
 "use strict";
 angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts'])
 	.directive(
-		"vgPoll", ["VG_STATES",
+		"vgQuestion", ["VG_STATES",
 			function(VG_EVENTS) {
 				return {
 					restrict: "E",
 					require: "^videogular",
 					scope: {
-						pollData: "=vgPollData",
-						onFinish: "=vgOnFinish",
+						questionData: "=vgQuestionData",
 					},
-					templateUrl: 'bower_components/videogular-questions/poll.html',
+					templateUrl: 'bower_components/videogular-questions/question.html',
 					link: function($scope, elem, attr, API) {
-						$scope.voteSubmitted = false; 
-						$scope.$watch('pollData', function(newVal, OldVal) {
-							//newVal is currently the time
-							if (typeof newVal !== 'undefined') {
-								$scope.question = newVal.questions[0].question;
-								$scope.options = newVal.questions[0].options;
-							}
-						});
-						$scope.onSubmitClick = function() {
-							$scope.voteSubmitted = true;
-							$scope.results = {
-								data: $scope.options.map(function(option, i) {
-									return {
-										x: option,
-										y: [i + 2]
-									};
-								}),
-							};
-						};
-						$scope.onContinueClick = function() {
-							$scope.onFinish();
+
+						$scope.init = function() {
+							$scope.question = $scope.questionData.question;
+							$scope.options = $scope.questionData.options;
 						};
 
-						// Chart
-						$scope.chartType = 'bar';
+						$scope.onSubmitClick = function(event){
+							$scope.$emit('submitted');
+						};
+
+						$scope.init();
 					},
 				};
 			}
 		]
 	)
 	.directive(
-		"vgQuiz", ["VG_STATES",
-			function(VG_EVENTS){
+		"vgAnnotation", ["VG_STATES",
+			function(VG_EVENTS) {
 				return {
 					restrict: "E",
 					require: "^videogular",
 					scope: {
+						annotationData: "=vgAnnotationData",
 					},
-					templateUrl: 'bower_components/videogular-questions/quiz.html',
+					template: "<vg-question ng-repeat='question in questions' ng-if='shouldRenderQuestion(question)' vg-question-data='question'></vg-question>",
 					link: function($scope, elem, attr, API) {
+
+						$scope.shouldRenderQuestion = function(question){
+							return ($scope.idThatShouldBeShown === question.id);
+						};
+
+						$scope.init = function() {
+							$scope.questions = $scope.annotationData.questions;
+							for (var i = 0; i <= $scope.questions.length - 1; i++) {
+								$scope.questions[i].id = i;
+							}
+							$scope.idThatShouldBeShown = 0;
+						};
+
+						$scope.$on('submitted', 
+							function(args){
+								$scope.idThatShouldBeShown++;
+								if ($scope.questions.length<=$scope.idThatShouldBeShown){
+									$scope.$emit('annotationEnd', $scope.annotationData);
+								}
+							}
+						);
+
+						$scope.init();
 					},
 				};
 			}
@@ -67,51 +76,61 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						theme: "=vgQuestionsTheme",
 						questions: "=vgQuestionsData"
 					},
-					templateUrl: 'bower_components/videogular-questions/questions.html',
+					template: "<vg-annotation ng-repeat='annotation in annotations' ng-if='shouldRenderAnnotation(annotation)' vg-annotation-data='annotation'></vg-annotation>",
 					link: function($scope, elem, attr, API) {
 
 						// shamelessly stolen from part of videogular's updateTheme function
-						$scope.updateTheme = function(value) {
+						function updateTheme(value) {
 							if (value) {
 								var headElem = angular.element(document).find("head");
 								headElem.append("<link rel='stylesheet' href='" + value + "'>");
 							}
-						};
+						}
 
 						$scope.$watch(
 							function() {
 								return API.currentTime;
 							},
 							function(newVal, oldVal) {
-								if (newVal !== 0 && newVal.getTime()>$scope.stopTime*1000 && !$scope.shown) {
-									API.pause();
-									$scope.pollData = $scope.dataStore[0];
-									$scope.showLayer = true;
-									$scope.shown = true;
+								if ($scope.annotations !== undefined && newVal !== 0){
+									for (var i = 0; i <= $scope.annotations.length - 1; i++) {
+										var stopTime = $scope.annotations[i].time;
+										if (!$scope.annotations[i].shown){
+											if (newVal.getTime()>stopTime*1000 && newVal.getTime()<(stopTime+1)*1000) {
+												API.pause();
+												$scope.annotations[i].show = true;
+												return;
+											}
+										}
+									}
 								}
 							}
 						);
 
-						$scope.parseQuestionData = function(data) {
-							$scope.stopTime = data[0].time;
-							$scope.dataStore = data;
+						function parseQuestionData(data) {
+							$scope.annotations = data;
+						}
+
+						$scope.shouldRenderAnnotation = function(annotation) {
+							return annotation.show;
 						};
 
 						$scope.init = function() {
-							$scope.showLayer = false;
-							$scope.shown = false;
-							$scope.updateTheme($scope.theme);
+							updateTheme($scope.theme);
 							$http.get($scope.questions).success(
 								function(data) {
-									$scope.parseQuestionData(data);
+									parseQuestionData(data);
 								}
 							);
 						};
 
-						$scope.onFinish = function() {
-							$scope.showLayer = false;
-							API.play();
-						};
+						$scope.$on('annotationEnd', 
+							function(event, args){
+								args.show = false;
+								args.shown = true;
+								API.play();
+							}
+						);
 
 						$scope.init();
 					},

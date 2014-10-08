@@ -1,3 +1,4 @@
+(function(){
 "use strict";
 angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts'])
 	.directive(
@@ -138,4 +139,4 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			}
 		]
 	);
-
+})();

@@ -2,6 +2,76 @@
 "use strict";
 angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts'])
 	.directive(
+		"vgQuestionSubmit", ["VG_STATES",
+			function(VG_EVENTS) {
+				return {
+					restrict: "E",
+					require: "^videogular",
+					scope: {
+					},
+					template: '<button class="btn btn-primary" type="button" ng-click="$parent.onSubmitClick()">Submit</button>',
+					link: function($scope, elem, attr, API) {
+
+						$scope.init = function() {
+						};
+
+						$scope.init();
+					},
+				};
+			}
+		]
+	)
+	.directive(
+		"vgQuestionMultiple", ["VG_STATES",
+			function(VG_EVENTS) {
+				return {
+					restrict: "E",
+					require: "^videogular",
+					scope: {
+						questionData: "=vgQuestionData",
+					},
+					templateUrl: 'bower_components/videogular-questions/question-multiple.html',
+					link: function($scope, elem, attr, API) {
+
+						$scope.init = function() {
+						};
+
+						$scope.onSubmitClick = function(event){
+							$scope.$emit('submitted');
+						};
+
+						$scope.init();
+					},
+				};
+			}
+		]
+	)
+	.directive(
+		"vgQuestionSingle", ["VG_STATES",
+			function(VG_EVENTS) {
+				return {
+					restrict: "E",
+					require: "^videogular",
+					scope: {
+						questionData: "=vgQuestionData",
+					},
+					templateUrl: 'bower_components/videogular-questions/question-single.html',
+					link: function($scope, elem, attr, API) {
+
+						$scope.init = function() {
+						};
+
+						$scope.onSubmitClick = function(event){
+							$scope.$emit('submitted');
+						};
+						
+						$scope.init();
+					},
+				};
+			}
+		]
+	)
+	.directive(
 		"vgResult", ["VG_STATES",
 			function(VG_EVENTS) {
 				return {
@@ -39,12 +109,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					link: function($scope, elem, attr, API) {
 
 						$scope.init = function() {
-							$scope.question = $scope.questionData.question;
-							$scope.options = $scope.questionData.options;
-						};
-
-						$scope.onSubmitClick = function(event){
-							$scope.$emit('submitted');
 						};
 
 						$scope.init();

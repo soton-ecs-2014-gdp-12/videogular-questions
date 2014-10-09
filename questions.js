@@ -2,6 +2,31 @@
 "use strict";
 angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts'])
 	.directive(
+		"vgResult", ["VG_STATES",
+			function(VG_EVENTS) {
+				return {
+					restrict: "E",
+					require: "^videogular",
+					scope: {
+						resultData: "=vgResultData",
+					},
+					template: '<div class="my-layer">Results and stuff<button class="btn btn-primary" type="button" ng-click="onSubmitClick()">Submit</button></div>',
+					link: function($scope, elem, attr, API) {
+
+						$scope.init = function() {
+						};
+
+						$scope.onSubmitClick = function(event){
+							$scope.$emit('submitted');
+						};
+
+						$scope.init();
+					},
+				};
+			}
+		]
+	)
+	.directive(
 		"vgQuestion", ["VG_STATES",
 			function(VG_EVENTS) {
 				return {
@@ -37,7 +62,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					scope: {
 						annotationData: "=vgAnnotationData",
 					},
-					template: "<vg-question ng-repeat='question in questions' ng-if='shouldRenderQuestion(question)' vg-question-data='question'></vg-question>",
+					templateUrl: "bower_components/videogular-questions/annotation.html",
 					link: function($scope, elem, attr, API) {
 
 						$scope.shouldRenderQuestion = function(question){
@@ -45,12 +70,27 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						};
 
 						$scope.init = function() {
-							$scope.questions = $scope.annotationData.questions;
-							for (var i = 0; i <= $scope.questions.length - 1; i++) {
-								$scope.questions[i].id = i;
+							var spacing = 1;
+							if($scope.annotationData.options.showResults){
+								spacing = 2;
+							}
+							$scope.questions = [];
+							for (var i = 0; i <= $scope.annotationData.questions.length - 1; i++) {
+								$scope.questions[i*spacing] = $scope.annotationData.questions[i];
+								$scope.questions[i*spacing].id = i*spacing;
+								if($scope.annotationData.options.showResults){
+									$scope.questions[i*spacing+1] = {id:i*spacing+1};
+								}
 							}
 							$scope.idThatShouldBeShown = 0;
 						};
+
+						$scope.test = function(a){
+							if (a.question)
+								return "question"
+							else
+								return "result"
+						}
 
 						$scope.$on('submitted', 
 							function(args){

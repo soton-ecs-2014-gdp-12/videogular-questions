@@ -64,13 +64,44 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						$scope.onSubmitClick = function(event){
 							$scope.$emit('submitted');
 						};
-						
+
 						$scope.init();
 					},
 				};
 			}
 		]
 	)
+	.directive(
+	"vgQuestionStars", ["VG_STATES",
+		function(VG_EVENTS) {
+			return {
+				restrict: "E",
+				require: "^videogular",
+				scope: {
+					questionData: "=vgQuestionData",
+				},
+				templateUrl: 'bower_components/videogular-questions/question-stars.html',
+				link: function($scope, elem, attr, API) {
+
+					$scope.init = function() {
+						var x = 1;
+						$scope.stars = [];
+						while(x < $scope.questionData.max + 1) {
+							$scope.stars.push(x);
+							x++;
+						}
+					};
+
+					$scope.onSubmitClick = function(event){
+						$scope.$emit('submitted');
+					};
+
+					$scope.init();
+				},
+			};
+		}
+	]
+)
 	.directive(
 		"vgResult", ["VG_STATES",
 			function(VG_EVENTS) {

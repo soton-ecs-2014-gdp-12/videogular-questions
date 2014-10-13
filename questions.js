@@ -111,7 +111,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					scope: {
 						resultData: "=vgResultData",
 					},
-					template: '<div class="my-layer">Some valid result response<button class="btn btn-primary" type="button" ng-click="onSubmitClick()">Submit</button></div>',
+					templateUrl: 'bower_components/videogular-questions/result.html',
 					link: function($scope, elem, attr, API) {
 
 						$scope.init = function() {

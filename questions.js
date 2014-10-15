@@ -9,7 +9,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					require: "^videogular",
 					scope: {
 					},
-					template: '<button class="btn btn-primary" type="button" ng-click="$parent.onSubmitClick()">Submit</button>',
+					template: '<button class="btn btn-primary" type="button" ng-disabled="$parent.onSubmitDisabled()" ng-click="$parent.onSubmitClick()">Submit</button>',
 					link: function($scope, elem, attr, API) {
 
 						$scope.init = function() {
@@ -93,6 +93,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							$scope.$emit('skipped');
 						};
 
+						$scope.onSubmitDisabled = function(event){
+							return false;
+						};
+
 						$scope.init();
 					},
 				};
@@ -126,6 +130,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 					$scope.onSkipClick = function(event){
 						$scope.$emit('skipped');
+					};
+
+					$scope.onSubmitDisabled = function(event){
+						return false;
 					};
 
 					$scope.init();

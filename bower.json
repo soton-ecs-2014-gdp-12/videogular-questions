@@ -18,6 +18,7 @@
     "tests"
   ],
   "dependencies": {
-	  "angular-charts": "latest"
+    "angular-charts": "latest",
+    "jjv": "latest"
   }
 }

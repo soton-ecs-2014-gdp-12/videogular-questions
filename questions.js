@@ -303,7 +303,21 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						);
 
 						function parseQuestionData(data) {
-							$scope.annotations = data;
+							$http.get("bower_components/videogular-questions/schema.json").success(
+								function(schema) {
+									var cleanData = JSON.parse(angular.toJson(data));
+									var env = new jjv();
+									env.addSchema('s', schema);
+									var result = env.validate('s', data);
+
+									if (result !== null) {
+										console.warn("validation error");
+										console.log(result);
+									}
+
+									$scope.annotations = data;
+								}
+							);
 						}
 
 						$scope.shouldRenderAnnotation = function(annotation) {

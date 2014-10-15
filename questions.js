@@ -209,16 +209,16 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						};
 
 						$scope.init = function() {
-							var options = $scope.annotationData.options;
+							var annotation = $scope.annotationData;
 
 							var spacing = 1;
 
 							var allowSkip = true; // default to allow questions to be skipped
-							if ("allowSkip" in options) {
-								allowSkip = options.allowSkip;
+							if ("allowSkip" in annotation) {
+								allowSkip = annotation.allowSkip;
 							}
 
-							if(options.showResults){
+							if (annotation.showResults){
 								spacing = 2;
 							}
 							$scope.questions = [];
@@ -227,7 +227,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 								question = $scope.questions[i*spacing] = $scope.annotationData.questions[i];
 
 								question.id = i*spacing;
-								if(options.showResults){
+								if (annotation.showResults){
 									$scope.questions[i*spacing+1] = {id:i*spacing+1};
 								}
 
@@ -311,7 +311,21 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						);
 
 						function parseQuestionData(data) {
-							$scope.annotations = data;
+							$http.get("bower_components/videogular-questions/schema.json").success(
+								function(schema) {
+									var cleanData = JSON.parse(angular.toJson(data));
+									var env = new jjv();
+									env.addSchema('s', schema);
+									var result = env.validate('s', data);
+
+									if (result !== null) {
+										console.warn("validation error");
+										console.log(result);
+									}
+
+									$scope.annotations = data;
+								}
+							);
 						}
 
 						$scope.shouldRenderAnnotation = function(annotation) {

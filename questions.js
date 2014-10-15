@@ -22,6 +22,26 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		]
 	)
 	.directive(
+		"vgQuestionSkip", ["VG_STATES",
+			function(VG_EVENTS) {
+				return {
+					restrict: "E",
+					require: "^videogular",
+					scope: {
+					},
+					template: '<button class="btn btn-primary" type="button" ng-click="$parent.onSkipClick()">Skip</button>',
+					link: function($scope, elem, attr, API) {
+
+						$scope.init = function() {
+						};
+
+						$scope.init();
+					},
+				};
+			}
+		]
+	)
+	.directive(
 		"vgQuestionMultiple", ["VG_STATES",
 			function(VG_EVENTS) {
 				return {
@@ -38,6 +58,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 						$scope.onSubmitClick = function(event){
 							$scope.$emit('submitted');
+						};
+
+						$scope.onSkipClick = function(event){
+							$scope.$emit('skipped');
 						};
 
 						$scope.init();
@@ -63,6 +87,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 						$scope.onSubmitClick = function(event){
 							$scope.$emit('submitted');
+						};
+
+						$scope.onSkipClick = function(event){
+							$scope.$emit('skipped');
 						};
 
 						$scope.init();
@@ -96,6 +124,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						$scope.$emit('submitted');
 					};
 
+					$scope.onSkipClick = function(event){
+						$scope.$emit('skipped');
+					};
+
 					$scope.init();
 				},
 			};
@@ -119,6 +151,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 						$scope.onSubmitClick = function(event){
 							$scope.$emit('submitted');
+						};
+
+						$scope.onSkipClick = function(event){
+							$scope.$emit('skipped');
 						};
 
 						$scope.init();
@@ -165,16 +201,30 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						};
 
 						$scope.init = function() {
+							var options = $scope.annotationData.options;
+
 							var spacing = 1;
-							if($scope.annotationData.options.showResults){
+
+							var allowSkip = true; // default to allow questions to be skipped
+							if ("allowSkip" in options) {
+								allowSkip = options.allowSkip;
+							}
+
+							if(options.showResults){
 								spacing = 2;
 							}
 							$scope.questions = [];
+							var question;
 							for (var i = 0; i <= $scope.annotationData.questions.length - 1; i++) {
-								$scope.questions[i*spacing] = $scope.annotationData.questions[i];
-								$scope.questions[i*spacing].id = i*spacing;
-								if($scope.annotationData.options.showResults){
+								question = $scope.questions[i*spacing] = $scope.annotationData.questions[i];
+
+								question.id = i*spacing;
+								if(options.showResults){
 									$scope.questions[i*spacing+1] = {id:i*spacing+1};
+								}
+
+								if (!("allowSkip" in question)) {
+									question.allowSkip = allowSkip;
 								}
 							}
 							$scope.idThatShouldBeShown = 0;
@@ -188,6 +238,15 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						}
 
 						$scope.$on('submitted', 
+							function(args){
+								$scope.idThatShouldBeShown++;
+								if ($scope.questions.length<=$scope.idThatShouldBeShown){
+									$scope.$emit('annotationEnd', $scope.annotationData);
+								}
+							}
+						);
+
+						$scope.$on('skipped',
 							function(args){
 								$scope.idThatShouldBeShown++;
 								if ($scope.questions.length<=$scope.idThatShouldBeShown){

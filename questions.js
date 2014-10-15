@@ -64,6 +64,14 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							$scope.$emit('skipped');
 						};
 
+						$scope.onSubmitDisabled = function(event){
+							for (var i = $scope.questionData.options.length - 1; i >= 0; i--) {
+								if ($scope.questionData.options[i].chosen)
+									return false;
+							};
+							return true;
+						};
+
 						$scope.init();
 					},
 				};
@@ -94,7 +102,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						};
 
 						$scope.onSubmitDisabled = function(event){
-							return false;
+							return !$scope.questionData.chosen;
 						};
 
 						$scope.init();

@@ -342,11 +342,15 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 						$scope.init = function() {
 							updateTheme($scope.theme);
-							$http.get($scope.questions).success(
-								function(data) {
-									parseQuestionData(data);
-								}
-							);
+
+							var worker = new Worker($scope.questions);
+
+							worker.addEventListener("message", function (e) {
+								console.log("worker message");
+								console.log(e);
+							}, false);
+
+							worker.postMessage({});
 						};
 
 						$scope.$on('annotationEnd', 

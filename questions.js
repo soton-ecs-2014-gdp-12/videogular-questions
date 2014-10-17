@@ -48,12 +48,24 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		this.annotationStart = function(id) {
 			console.log("send annotation start");
 			var obj = {
-  				"annotationStart": id
+				"annotationStart": id
 			};
 			this.sendEvent(obj);
 		}
 
+		this.questionResult = function(questionId, annotationid, result) {
+			var obj =  {
+				"questionResult": questionId,
+				"annotation": annotationid,
+				"result": {}
+			};
+
+			console.log("calling send event");
+			this.sendEvent(obj);
+		}
+
 		this.sendEvent = function(obj) {
+			console.log("posting msg")
 			this.worker.postMessage(obj);
 		}
 	})
@@ -256,6 +268,16 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							}
 						);
 
+						$scope.$on('submitted', 
+							function(event,args){
+								event.stopPropagation();
+								$scope.$parent.$emit('submitted', 
+								{
+									"questionResult": $scope.questionData.id,
+								});
+							}
+						);
+
 						$scope.init();
 					},
 				};
@@ -280,18 +302,15 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						$scope.$on('showQuestion', 
 							function(event, args){
 								$scope.shouldShow.question = true;
+								$scope.questionData = args;
 							}
 						);
 
 						$scope.$on('submitted', 
-							function(args){
-								//$scope.$emit('annotationEnd', $scope.annotationData);
-							}
-						);
-
-						$scope.$on('skipped',
-							function(args){
-								//$scope.$emit('annotationEnd', $scope.annotationData);
+							function(event,args){
+								event.stopPropagation();
+								args.annotation = $scope.questionData.annotation;
+								$scope.$parent.$emit('submitted', args);
 							}
 						);
 
@@ -334,6 +353,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 												API.pause();
 												console.log("time was reached -> " + newVal.getTime() + "was" + oldVal.getTime());
 												WW_UTILS.annotationStart($scope.annotations[i].id);
+												$scope.currentAnnotation = $scope.annotations[i].id;
 												return;
 											}
 									}
@@ -375,12 +395,25 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 									console.log("I just got some a question to show");
 									console.log(data);
 									$scope.shouldShow.annotation = true;
+									data.showQuestion.annotation = $scope.currentAnnotation;
 									$scope.$broadcast('showQuestion', data.showQuestion);
 									$scope.$apply();
 								}
-							);		
-
+							);
 						};
+
+						$scope.$on('submitted', 
+							function(event,args){
+								console.log('submitted');
+								console.log(args);
+								WW_UTILS.questionResult(args.questionResult, args.annotation);
+							}
+						);
+
+						$scope.$on('skipped',
+							function(args){
+							}
+						);
 
 						$scope.$on('annotationEnd', 
 							function(event, args){

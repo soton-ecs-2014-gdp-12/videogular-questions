@@ -98,6 +98,8 @@ set the video time
 			postMessage({
 				"endAnnotation": annotationId
 			});
+
+			return;
 		}
 
 		while (questions.length !== 0) {
@@ -118,8 +120,12 @@ set the video time
 				"showQuestion": question
 			});
 
-			break;
+			return;
 		}
+
+		postMessage({
+			"endAnnotation": annotationId
+		});
 	}
 
 	self.loadAnnotations = function(annotations) {
@@ -134,9 +140,10 @@ set the video time
 			var message = e.data;
 			var id, annotation;
 
+			console.log("message from page");
+			console.log(message);
+
 			for (var key in handlers) {
-				console.log("message from page");
-				console.log(message);
 				if (key in message) {
 					handlers[key](message, annotations);
 					break;

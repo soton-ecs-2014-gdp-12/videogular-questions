@@ -1,6 +1,32 @@
 (function(){
 "use strict";
 angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts'])
+	.constant("WW_STATES", {
+		ANNOTATION_START: "",
+		SUBMIT_CLICKED: ""
+	})
+	.service("WW_UTILS", function () {
+		this.callbackList = [];
+
+		this.callback = function(e){
+			console.log("worker message");
+			console.log(e);
+		}
+
+		this.init = function(schema) {
+			var worker = new Worker(schema);
+
+			worker.addEventListener("message", this.callback ,false);	
+		}
+
+		this.addCallback = function(callback) {
+			this.callbackList.push(callback);
+		}
+
+		this.sendEvent = function(state) {
+			worker.postMessage({});
+		}
+	})
 	.directive(
 		"vgQuestionSubmit", ["VG_STATES",
 			function(VG_EVENTS) {
@@ -278,8 +304,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		]
 	)
 	.directive(
-		"vgQuestions", ["VG_STATES", "$http",
-			function(VG_EVENTS, $http) {
+		"vgQuestions", ["VG_STATES", "$http", "WW_UTILS",
+			function(VG_EVENTS, $http, WW_UTILS) {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -342,15 +368,13 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 						$scope.init = function() {
 							updateTheme($scope.theme);
+							WW_UTILS.init($scope.questions);
+							WW_UTILS.addCallback(
+								function(){
+									console.log("i got something");
+								}
+							);
 
-							var worker = new Worker($scope.questions);
-
-							worker.addEventListener("message", function (e) {
-								console.log("worker message");
-								console.log(e);
-							}, false);
-
-							worker.postMessage({});
 						};
 
 						$scope.$on('annotationEnd', 

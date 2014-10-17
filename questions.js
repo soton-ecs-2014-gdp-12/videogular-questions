@@ -130,7 +130,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							$scope.stars.push(x);
 							x++;
 						}
-						$scope.rating = 0;
+						$scope.questionData.rating = 0;
 					};
 
 					$scope.onSubmitClick = function(event){
@@ -142,7 +142,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					};
 
 					$scope.onSubmitDisabled = function(event){
-						return false;
+						return $scope.questionData.rating === 0;
 					};
 
 					$scope.init();

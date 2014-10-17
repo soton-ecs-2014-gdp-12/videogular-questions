@@ -130,6 +130,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							$scope.stars.push(x);
 							x++;
 						}
+						$scope.rating = 0;
 					};
 
 					$scope.onSubmitClick = function(event){

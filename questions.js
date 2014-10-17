@@ -242,13 +242,19 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					restrict: "E",
 					require: "^videogular",
 					scope: {
-						questionData: "=vgQuestionData",
 					},
 					templateUrl: 'bower_components/videogular-questions/question.html',
 					link: function($scope, elem, attr, API) {
 
 						$scope.init = function() {
 						};
+
+						$scope.$on('showQuestion', 
+							function(event, args){
+								console.log(args);
+								$scope.questionData = args;
+							}
+						);
 
 						$scope.init();
 					},
@@ -263,67 +269,29 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					restrict: "E",
 					require: "^videogular",
 					scope: {
-						annotationData: "=vgAnnotationData",
 					},
 					templateUrl: "bower_components/videogular-questions/annotation.html",
 					link: function($scope, elem, attr, API) {
 
-						$scope.shouldRenderQuestion = function(question){
-							return ($scope.idThatShouldBeShown === question.id);
-						};
-
 						$scope.init = function() {
-							var annotation = $scope.annotationData;
-
-							var spacing = 1;
-
-							var allowSkip = true; // default to allow questions to be skipped
-							if ("allowSkip" in annotation) {
-								allowSkip = annotation.allowSkip;
-							}
-
-							if (annotation.showResults){
-								spacing = 2;
-							}
-							$scope.questions = [];
-							var question;
-							for (var i = 0; i <= $scope.annotationData.questions.length - 1; i++) {
-								question = $scope.questions[i*spacing] = $scope.annotationData.questions[i];
-
-								question.id = i*spacing;
-								if (annotation.showResults){
-									$scope.questions[i*spacing+1] = {id:i*spacing+1};
-								}
-
-								if (!("allowSkip" in question)) {
-									question.allowSkip = allowSkip;
-								}
-							}
-							$scope.idThatShouldBeShown = 0;
+							$scope.shouldShow = {question:false, result:false};
 						};
 
-						$scope.test = function(a){
-							if (a.question)
-								return "question"
-							else
-								return "result"
-						}
+						$scope.$on('showQuestion', 
+							function(event, args){
+								$scope.shouldShow.question = true;
+							}
+						);
 
 						$scope.$on('submitted', 
 							function(args){
-								$scope.idThatShouldBeShown++;
-								if ($scope.questions.length<=$scope.idThatShouldBeShown){
-									$scope.$emit('annotationEnd', $scope.annotationData);
-								}
+								//$scope.$emit('annotationEnd', $scope.annotationData);
 							}
 						);
 
 						$scope.$on('skipped',
 							function(args){
-								$scope.idThatShouldBeShown++;
-								if ($scope.questions.length<=$scope.idThatShouldBeShown){
-									$scope.$emit('annotationEnd', $scope.annotationData);
-								}
+								//$scope.$emit('annotationEnd', $scope.annotationData);
 							}
 						);
 
@@ -343,7 +311,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						theme: "=vgQuestionsTheme",
 						questions: "=vgQuestionsData"
 					},
-					template: "<vg-annotation ng-repeat='annotation in annotations' ng-if='shouldRenderAnnotation(annotation)' vg-annotation-data='annotation'></vg-annotation>",
+					template: "<vg-annotation ng-show='shouldShow.annotation'></vg-annotation>",
 					link: function($scope, elem, attr, API) {
 
 						// shamelessly stolen from part of videogular's updateTheme function
@@ -391,11 +359,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							);
 						}
 
-						$scope.shouldRenderAnnotation = function(annotation) {
-							return annotation.show;
-						};
-
 						$scope.init = function() {
+							$scope.shouldShow = {annotation : false};
 							updateTheme($scope.theme);
 							WW_UTILS.init($scope.questions);
 							WW_UTILS.addAnnotationsListUpdateCallback(
@@ -409,6 +374,9 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 								function(data){
 									console.log("I just got some a question to show");
 									console.log(data);
+									$scope.shouldShow.annotation = true;
+									$scope.$broadcast('showQuestion', data.showQuestion);
+									$scope.$apply();
 								}
 							);		
 

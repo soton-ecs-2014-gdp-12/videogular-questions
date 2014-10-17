@@ -50,12 +50,14 @@ set the video time
 (function() {
 
 	function publishAnnotations(annotations) {
-		var thing = {};
+		var thing = {
+			annotations:[]
+		};
 		for (var id in annotations) {
-			var annotation = annotations[id];
-			thing[id] = {
-				time: annotation.time
-			};
+			thing.annotations.push({
+				id: id,
+				time: annotations[id].time
+			});
 		}
 
 		postMessage(thing);

@@ -3,18 +3,18 @@ Events from videogular-questions
 
 sent when a particular annotation is reached in the video
 {
-  annotation-start: annotation-id
+  annotationStart: annotationId
 }
 
 sent when a question is answered
 {
-  question-result: question-id,
-  annotation: annotation-id
+  questionResult: questionId,
+  annotation: annotationid
   result: ...
 }
 
 {
-  result-finished: question-id|annotation-id
+  resultFinished: questionid|annotationid
 }
 
 Messages from the WebWorker
@@ -28,22 +28,22 @@ update the list of annotations
 
 show a question
 {
-  show-question: a-question
+  showQuestion: aQuestion
 }
 
 show some results
 {
-  show-results: some-results
+  showResults: someResults
 }
 
 end the annotation
 {
-  end-annotation: annotations
+  endAnnotation: annotations
 }
 
 set the video time
 {
-  set-time: time
+  setTime: time
 }
 */
 
@@ -63,18 +63,22 @@ set the video time
 		postMessage(thing);
 	}
 
-	function annotationStart(message) {
-		id = message.annotation-start;
+	function annotationStart(message, annotations) {
+		id = message.annotationStart;
 
 		annotation = annotations[id];
 
 		var firstQuestion = annotation.questions[0];
 
-		postMessage(firstQuestion);
+		postMessage(
+			{
+				showQuestion: firstQuestion
+			}
+		);
 	}
 
 	function questionResult(message, annotations) {
-		var questionId = message.question-result;
+		var questionId = message.questionResult;
 		var annotationId = message.annotation;
 
 		var annotation = annotations[annotationId];
@@ -92,7 +96,7 @@ set the video time
 
 		if (questions.length === 0) {
 			postMessage({
-				"end-annotation": annotationId
+				"endAnnotation": annotationId
 			});
 		}
 
@@ -111,7 +115,7 @@ set the video time
 			}
 
 			postMessage({
-				"show-question": question
+				"showQuestion": question
 			});
 
 			break;
@@ -122,8 +126,8 @@ set the video time
 		publishAnnotations(annotations);
 
 		var handlers = {
-			"annotation-start": annotationStart,
-			"question-result": questionResult
+			"annotationStart": annotationStart,
+			"questionResult": questionResult
 		};
 
 		onmessage = function(e) {

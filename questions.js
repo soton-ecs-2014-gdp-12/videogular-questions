@@ -1,30 +1,60 @@
 (function(){
 "use strict";
 angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts'])
-	.constant("WW_STATES", {
-		ANNOTATION_START: "",
-		SUBMIT_CLICKED: ""
-	})
 	.service("WW_UTILS", function () {
-		this.callbackList = [];
+		this.annotationsListUpdateCallbackList = [];
+		this.showQuestionCallbackList = [];
+		this.blah = []
+
+		var handlers = {
+			"annotations": this.annotationsListUpdateCallbackList,
+			"showQuestion": this.showQuestionCallbackList,
+			"showResults": this.blah,
+			"endAnnotation": this.blah
+		};
 
 		this.callback = function(e){
-			console.log("worker message");
-			console.log(e);
+			var data = e.data;
+			console.log("message from worker");
+			console.log(data);
+
+			for (var key in handlers) {
+				if (key in data) {
+					handlers[key].forEach(
+						function(callback){
+							callback(data);
+						}
+					);
+
+					break;
+				}
+			}
 		}
 
 		this.init = function(schema) {
-			var worker = new Worker(schema);
+			this.worker = new Worker(schema);
 
-			worker.addEventListener("message", this.callback ,false);	
+			this.worker.addEventListener("message", this.callback ,false);	
 		}
 
-		this.addCallback = function(callback) {
-			this.callbackList.push(callback);
+		this.addAnnotationsListUpdateCallback = function(callback) {
+			this.annotationsListUpdateCallbackList.push(callback);
 		}
 
-		this.sendEvent = function(state) {
-			worker.postMessage({});
+		this.showQuestionCallbackListUpdateCallback = function(callback) {
+			this.showQuestionCallbackList.push(callback);
+		}
+
+		this.annotationStart = function(id) {
+			console.log("send annotation start");
+			var obj = {
+  				"annotationStart": id
+			};
+			this.sendEvent(obj);
+		}
+
+		this.sendEvent = function(obj) {
+			this.worker.postMessage(obj);
 		}
 	})
 	.directive(
@@ -329,16 +359,15 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 								return API.currentTime;
 							},
 							function(newVal, oldVal) {
-								if ($scope.annotations !== undefined && newVal !== 0){
+								if ($scope.annotations !== undefined && newVal !== 0 && oldVal !== 0 && newVal.getTime() !== oldVal.getTime()){
 									for (var i = 0; i <= $scope.annotations.length - 1; i++) {
 										var stopTime = $scope.annotations[i].time;
-										if (!$scope.annotations[i].shown){
-											if (newVal.getTime()>stopTime*1000 && newVal.getTime()<(stopTime+1)*1000) {
+											if (newVal.getTime()>stopTime*1000) {
 												API.pause();
-												$scope.annotations[i].show = true;
+												console.log("time was reached -> " + newVal.getTime() + "was" + oldVal.getTime());
+												WW_UTILS.annotationStart($scope.annotations[i].id);
 												return;
 											}
-										}
 									}
 								}
 							}
@@ -369,11 +398,19 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						$scope.init = function() {
 							updateTheme($scope.theme);
 							WW_UTILS.init($scope.questions);
-							WW_UTILS.addCallback(
-								function(){
-									console.log("i got something");
+							WW_UTILS.addAnnotationsListUpdateCallback(
+								function(data){
+									console.log("I just got some new times to stop at");
+									console.log(data);
+									$scope.annotations = data.annotations;
 								}
 							);
+							WW_UTILS.showQuestionCallbackListUpdateCallback(
+								function(data){
+									console.log("I just got some a question to show");
+									console.log(data);
+								}
+							);		
 
 						};
 

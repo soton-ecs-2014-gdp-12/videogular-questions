@@ -5,13 +5,15 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		this.annotationsListUpdateCallbackList = [];
 		this.showQuestionCallbackList = [];
 		this.endAnnotationList = [];
+		this.setTimeCallbackList = [];
 		this.blah = []
 
 		var handlers = {
 			"annotations": this.annotationsListUpdateCallbackList,
 			"showQuestion": this.showQuestionCallbackList,
 			"showResults": this.blah,
-			"endAnnotation": this.endAnnotationList
+			"endAnnotation": this.endAnnotationList,
+			"setTime": this.
 		};
 
 		this.callback = function(e){
@@ -48,6 +50,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 		this.showQuestionCallbackListUpdateCallback = function(callback) {
 			this.showQuestionCallbackList.push(callback);
+		}
+
+		this.setTimeCallbackListUpdateCallback = function(callback) {
+			this.setTimeCallbackList.push(callback);
 		}
 
 		this.annotationStart = function(id) {
@@ -424,6 +430,14 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 									API.play();
 								}
 							);
+							WW_UTILS.setTimeCallbackListUpdateCallback(
+								function(data){
+									console.log("Setting time");
+									API.seekTime(data.setTime);
+								}
+							);
+
+							
 						};
 
 						$scope.$on('submitted', 

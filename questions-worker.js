@@ -43,7 +43,7 @@ end the annotation
 
 set the video time
 {
-  setTime: time
+  setTime: time (time is seconds from the start of the video)
 }
 */
 

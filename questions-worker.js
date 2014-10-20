@@ -98,6 +98,18 @@ set the video time
 			console.log("looking at question " + question.id);
 
 			if (question.id === questionId) {
+				// determine if any actions need to be performed
+
+				if ("action" in question) {
+					question.action(result, {
+						setTime: function(time) {
+							postMessage({
+								setTime: time
+							});
+						}
+					});
+				}
+
 				break;
 			}
 		}

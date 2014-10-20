@@ -4,13 +4,14 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.service("WW_UTILS", function () {
 		this.annotationsListUpdateCallbackList = [];
 		this.showQuestionCallbackList = [];
+		this.endAnnotationList = [];
 		this.blah = []
 
 		var handlers = {
 			"annotations": this.annotationsListUpdateCallbackList,
 			"showQuestion": this.showQuestionCallbackList,
 			"showResults": this.blah,
-			"endAnnotation": this.blah
+			"endAnnotation": this.endAnnotationList
 		};
 
 		this.callback = function(e){
@@ -39,6 +40,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 		this.addAnnotationsListUpdateCallback = function(callback) {
 			this.annotationsListUpdateCallbackList.push(callback);
+		}
+
+		this.addEndAnnotationCallback = function(callback) {
+			this.endAnnotationList.push(callback);
 		}
 
 		this.showQuestionCallbackListUpdateCallback = function(callback) {
@@ -341,6 +346,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							}
 						}
 
+						var shownAnnotations = {};
+
 						$scope.$watch(
 							function() {
 								return API.currentTime;
@@ -348,14 +355,23 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							function(newVal, oldVal) {
 								if ($scope.annotations !== undefined && newVal !== 0 && oldVal !== 0 && newVal.getTime() !== oldVal.getTime()){
 									for (var i = 0; i <= $scope.annotations.length - 1; i++) {
+										var annotation = $scope.annotations[i];
+
+										if (annotation.id in shownAnnotations) {
+											continue;
+										}
+
 										var stopTime = $scope.annotations[i].time;
-											if (newVal.getTime()>stopTime*1000) {
-												API.pause();
-												console.log("time was reached -> " + newVal.getTime() + "was" + oldVal.getTime());
-												WW_UTILS.annotationStart($scope.annotations[i].id);
-												$scope.currentAnnotation = $scope.annotations[i].id;
-												return;
-											}
+
+										if (newVal.getTime()>stopTime*1000) {
+											shownAnnotations[annotation.id] = true;
+
+											API.pause();
+											console.log("time was reached -> " + newVal.getTime() + "was" + oldVal.getTime());
+											WW_UTILS.annotationStart($scope.annotations[i].id);
+											$scope.currentAnnotation = $scope.annotations[i].id;
+											return;
+										}
 									}
 								}
 							}
@@ -398,6 +414,14 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 									data.showQuestion.annotation = $scope.currentAnnotation;
 									$scope.$broadcast('showQuestion', data.showQuestion);
 									$scope.$apply();
+								}
+							);
+							WW_UTILS.addEndAnnotationCallback(
+								function(data){
+									console.log("Ending the annotation");
+									$scope.shouldShow.annotation = false;
+									$scope.$apply();
+									API.play();
 								}
 							);
 						};

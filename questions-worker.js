@@ -80,6 +80,7 @@ set the video time
 	function questionResult(message, annotations) {
 		var questionId = message.questionResult;
 		var annotationId = message.annotation;
+		var result = message.result;
 
 		var annotation = annotations[annotationId];
 
@@ -119,7 +120,7 @@ set the video time
 				var condition = question.condition;
 
 				// TOOD: Probably should give a deep copy of questions here
-				var conditionResult = condition(annotation.questions);
+				var conditionResult = condition(annotation.questions, result);
 
 				if (!conditionResult) {
 					continue;

@@ -13,7 +13,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			"showQuestion": this.showQuestionCallbackList,
 			"showResults": this.blah,
 			"endAnnotation": this.endAnnotationList,
-			"setTime": this.
+			"setTime": this.setTimeCallbackList
 		};
 
 		this.callback = function(e){
@@ -68,7 +68,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			var obj =  {
 				"questionResult": questionId,
 				"annotation": annotationid,
-				"result": {}
+				"result": result
 			};
 
 			console.log("calling send event");
@@ -173,7 +173,9 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						};
 
 						$scope.onSubmitClick = function(event){
-							$scope.$emit('submitted');
+							$scope.$emit('submitted', {
+								result: $scope.questionData.chosen
+							});
 						};
 
 						$scope.onSkipClick = function(event){
@@ -212,7 +214,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					};
 
 					$scope.onSubmitClick = function(event){
-						$scope.$emit('submitted');
+						$scope.$emit('submitted',{});
 					};
 
 					$scope.onSkipClick = function(event){
@@ -245,7 +247,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						};
 
 						$scope.onSubmitClick = function(event){
-							$scope.$emit('submitted');
+							$scope.$emit('submitted',{});
 						};
 
 						$scope.onSkipClick = function(event){
@@ -282,10 +284,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						$scope.$on('submitted', 
 							function(event,args){
 								event.stopPropagation();
-								$scope.$parent.$emit('submitted', 
-								{
-									"questionResult": $scope.questionData.id,
-								});
+								args.questionResult = $scope.questionData.id;
+								$scope.$parent.$emit('submitted', args);
 							}
 						);
 
@@ -444,7 +444,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							function(event,args){
 								console.log('submitted');
 								console.log(args);
-								WW_UTILS.questionResult(args.questionResult, args.annotation);
+								WW_UTILS.questionResult(args.questionResult, args.annotation, args.result);
 							}
 						);
 

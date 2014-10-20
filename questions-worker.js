@@ -83,18 +83,28 @@ set the video time
 
 		var annotation = annotations[annotationId];
 
+		console.log("annotation questions");
+		console.log(annotation.questions);
+
 		var question;
 		var questions = annotation.questions.slice(); // shallow copy
 
 		while (questions.length !== 0) {
-			question = questions.pop();
+			console.log("looking to determine the next question");
+
+			question = questions.shift();
+
+			console.log("looking at question " + question.id);
 
 			if (question.id === questionId) {
 				break;
 			}
 		}
 
+		console.log("checking for remaining questions");
+
 		if (questions.length === 0) {
+			console.log("no remaining questions");
 			postMessage({
 				"endAnnotation": annotationId
 			});
@@ -103,21 +113,23 @@ set the video time
 		}
 
 		while (questions.length !== 0) {
-			question = questions.pop();
+			question = questions.shift();
 
-			if ("condition" in quesiton) {
+			if ("condition" in question) {
 				var condition = question.condition;
 
-				// TOOD: Probably should give a copy of questions here
-				var conditionResult = condition(questions);
+				// TOOD: Probably should give a deep copy of questions here
+				var conditionResult = condition(annotation.questions);
 
 				if (!conditionResult) {
 					continue;
 				}
 			}
 
+			// The parse and stringify is a crude but effective way of removing any
+			// functions in the object
 			postMessage({
-				"showQuestion": question
+				"showQuestion": JSON.parse(JSON.stringify(question))
 			});
 
 			return;
@@ -140,8 +152,7 @@ set the video time
 			var message = e.data;
 			var id, annotation;
 
-			console.log("message from page");
-			console.log(message);
+			console.log("message from page " + JSON.stringify(message));
 
 			for (var key in handlers) {
 				if (key in message) {

@@ -1,6 +1,8 @@
-<label data-ng-repeat="option in questionData.options">
-	<input name="question-form" type="radio" ng-model="questionData.chosen" value="{{option.name}}"> {{ option.name }} <br />
+<div data-ng-repeat="option in questionData.options">
+<label>
+	<input name="question-form" type="radio" ng-model="questionData.chosen" value="{{option.name}}"> {{ option.name }}
 </label>
+</div>
 
 <br />
 

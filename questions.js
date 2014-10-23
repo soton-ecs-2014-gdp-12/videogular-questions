@@ -1,70 +1,64 @@
 (function(){
 "use strict";
 angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts'])
-	.service("WW_UTILS", function () {
-		this.annotationsListUpdateCallbackList = [];
-		this.showQuestionCallbackList = [];
-		this.endAnnotationList = [];
-		this.setTimeCallbackList = [];
-		this.blah = []
+	.factory("webWorkerFactory", function () {
+		var webWorker = {};
 
 		var handlers = {
-			"annotations": this.annotationsListUpdateCallbackList,
-			"showQuestion": this.showQuestionCallbackList,
-			"showResults": this.blah,
-			"endAnnotation": this.endAnnotationList,
-			"setTime": this.setTimeCallbackList
+			"annotations": [],
+			"showQuestion": [],
+			"showResults": [],
+			"endAnnotation": [],
+			"setTime": []
 		};
 
-		this.callback = function(e){
-			var data = e.data;
-			console.log("message from worker");
-			console.log(data);
+		webWorker.init = function(schema) {
+			webWorker.worker = new Worker(schema);
 
-			for (var key in handlers) {
-				if (key in data) {
-					handlers[key].forEach(
-						function(callback){
-							callback(data);
-						}
-					);
+			webWorker.worker.addEventListener("message", function(e) {
+				var data = e.data;
+				console.log("message from worker");
+				console.log(data);
 
-					break;
+				for (var key in handlers) {
+					if (key in data) {
+						handlers[key].forEach(
+							function(callback){
+								callback(data);
+							}
+						);
+
+						break;
+					}
 				}
-			}
+			} ,false);
 		}
 
-		this.init = function(schema) {
-			this.worker = new Worker(schema);
-
-			this.worker.addEventListener("message", this.callback ,false);	
+		webWorker.addAnnotationsListUpdateCallback = function(callback) {
+			handlers.annotations.push(callback);
 		}
 
-		this.addAnnotationsListUpdateCallback = function(callback) {
-			this.annotationsListUpdateCallbackList.push(callback);
+		webWorker.addEndAnnotationCallback = function(callback) {
+			handlers.endAnnotation.push(callback);
 		}
 
-		this.addEndAnnotationCallback = function(callback) {
-			this.endAnnotationList.push(callback);
+		webWorker.addShowQuestionCallback = function(callback) {
+			handlers.showQuestion.push(callback);
 		}
 
-		this.showQuestionCallbackListUpdateCallback = function(callback) {
-			this.showQuestionCallbackList.push(callback);
+		webWorker.addSetTimeCallback = function(callback) {
+			handlers.setTime.push(callback);
 		}
 
-		this.setTimeCallbackListUpdateCallback = function(callback) {
-			this.setTimeCallbackList.push(callback);
-		}
-
-		this.annotationStart = function(id) {
+		webWorker.annotationStart = function(id) {
 			console.log("send annotation start");
 			var obj = {
 				"annotationStart": id
 			};
-			this.sendEvent(obj);
+			webWorker.sendEvent(obj);
 		}
 
-		this.questionResult = function(questionId, annotationid, result) {
+		webWorker.questionResult = function(questionId, annotationid, result) {
 			var obj =  {
 				"questionResult": questionId,
 				"annotation": annotationid,
@@ -72,13 +66,15 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			};
 
 			console.log("calling send event");
-			this.sendEvent(obj);
+			webWorker.sendEvent(obj);
 		}
 
-		this.sendEvent = function(obj) {
+		webWorker.sendEvent = function(obj) {
 			console.log("posting msg")
-			this.worker.postMessage(obj);
+			webWorker.worker.postMessage(obj);
 		}
+
+		return webWorker
 	})
 	.directive(
 		"vgQuestionSubmit", ["VG_STATES",
@@ -333,8 +329,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		]
 	)
 	.directive(
-		"vgQuestions", ["VG_STATES", "$http", "WW_UTILS",
-			function(VG_EVENTS, $http, WW_UTILS) {
+		"vgQuestions", ["VG_STATES", "$http", "webWorkerFactory",
+			function(VG_EVENTS, $http, webWorker) {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -375,7 +371,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 											API.pause();
 											console.log("time was reached -> " + newVal.getTime() + "was" + oldVal.getTime());
-											WW_UTILS.annotationStart($scope.annotations[i].id);
+											webWorker.annotationStart($scope.annotations[i].id);
 											$scope.currentAnnotation = $scope.annotations[i].id;
 											return;
 										}
@@ -405,15 +401,15 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						$scope.init = function() {
 							$scope.shouldShow = {annotation : false};
 							updateTheme($scope.theme);
-							WW_UTILS.init($scope.questions);
-							WW_UTILS.addAnnotationsListUpdateCallback(
+							webWorker.init($scope.questions);
+							webWorker.addAnnotationsListUpdateCallback(
 								function(data){
 									console.log("I just got some new times to stop at");
 									console.log(data);
 									$scope.annotations = data.annotations;
 								}
 							);
-							WW_UTILS.showQuestionCallbackListUpdateCallback(
+							webWorker.addShowQuestionCallback(
 								function(data){
 									console.log("I just got some a question to show");
 									console.log(data);
@@ -423,7 +419,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 									$scope.$apply();
 								}
 							);
-							WW_UTILS.addEndAnnotationCallback(
+							webWorker.addEndAnnotationCallback(
 								function(data){
 									console.log("Ending the annotation");
 									$scope.shouldShow.annotation = false;
@@ -431,7 +427,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 									API.play();
 								}
 							);
-							WW_UTILS.setTimeCallbackListUpdateCallback(
+							webWorker.addSetTimeCallback(
 								function(data){
 									console.log("Setting time");
 									API.seekTime(data.setTime);
@@ -445,7 +441,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							function(event,args){
 								console.log('submitted');
 								console.log(args);
-								WW_UTILS.questionResult(args.questionResult, args.annotation, args.result);
+								webWorker.questionResult(args.questionResult, args.annotation, args.result);
 							}
 						);
 

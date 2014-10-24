@@ -1,10 +1,14 @@
-Select at least X choices and at most Y choices.
+Select at least {{questionData.min}} choices and at most {{questionData.max}} choices.
 
-<label data-ng-repeat="option in questionData.options">
-	<input name="question-form" type="checkbox" ng-model="option.chosen" value="{{option.name}}"/> {{ option.name }} <br />
+<div data-ng-repeat="option in questionData.options">
+<label>
+	<input name="question-form" type="checkbox" ng-model="option.chosen" value="{{option.name}}"/> {{ option.name }}
 </label>
+</div>
 
 <br />
 
-<vg-question-submit></vg-question-submit>
-<vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
+<div id="button_group">
+	<vg-question-submit></vg-question-submit>
+	<vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
+</div>

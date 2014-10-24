@@ -1,6 +1,6 @@
-Select a rating from MIN to MAX:
+Select a rating from minimum {{questionData.min}} stars to maximum {{questionData.max}} stars: <br /><br />
 
-<div role="radiogroup">
+<div id="stars_list" role="radiogroup">
 	<button data-ng-repeat="star in stars" ng-click="questionData.rating=star"
 		role="radio" aria-selected="{{questionData.rating == star}}" title="Rate {{star}} star"/>
 		{{(questionData.rating >= star) ? '&#x2605;' : '&#x2606;'}}
@@ -9,5 +9,7 @@ Select a rating from MIN to MAX:
 
 <br/>
 
+<div id="button_group">
 <vg-question-submit></vg-question-submit>
 <vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
+</div>

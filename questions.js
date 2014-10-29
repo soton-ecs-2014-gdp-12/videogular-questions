@@ -229,6 +229,42 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	]
 )
 	.directive(
+	"vgQuestionText", ["VG_STATES",
+		function(VG_EVENTS) {
+			return {
+				restrict: "E",
+				require: "^videogular",
+				scope: {
+					questionData: "=vgQuestionData",
+				},
+				templateUrl: 'bower_components/videogular-questions/question-text.html',
+				link: function($scope, elem, attr, API) {
+
+					$scope.init = function() {
+					};
+
+					$scope.onSubmitClick = function(event){
+						$scope.$emit('submitted', {
+							result: $scope.questionData.chosen
+						});
+					};
+
+					$scope.onSkipClick = function(event){
+						$scope.$emit('skipped');
+					};
+
+					$scope.onSubmitDisabled = function(event){
+						return !$scope.questionData.chosen;
+					};
+
+					$scope.init();
+				},
+			};
+		}
+	]
+)
+
+	.directive(
 		"vgResult", ["VG_STATES",
 			function(VG_EVENTS) {
 				return {

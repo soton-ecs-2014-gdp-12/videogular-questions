@@ -410,6 +410,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					scope: {
 						theme: "=vgQuestionsTheme",
 						questions: "=vgQuestionsData",
+						cuepoints: "=vgQuestionsCuepoints",
 						pollServerUrl: "=vgPollServerUrl"
 					},
 					template: "<vg-annotation ng-show='shouldShow.annotation'></vg-annotation>",
@@ -472,6 +473,16 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							);
 						}
 
+						function addCuepoints(annotationList) {
+							if (typeof $scope.cuepoints !== 'undefined') {
+								$scope.cuepoints.points = $scope.cuepoints.points || [];
+
+								for (var i in annotationList) {
+									$scope.cuepoints.points.push({ time: annotationList[i].time });
+								}
+							}
+						}
+
 						$scope.init = function() {
 							$scope.shouldShow = {annotation : false};
 							updateTheme($scope.theme);
@@ -480,7 +491,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 								function(data){
 									console.log("I just got some new times to stop at");
 									console.log(data);
+
 									$scope.annotations = data.annotations;
+
+									addCuepoints($scope.annotations);
 								}
 							);
 							webWorker.addShowQuestionCallback(

@@ -58,11 +58,11 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			webWorker.sendEvent(obj);
 		}
 
-		webWorker.questionResult = function(questionId, annotationid, result) {
+		webWorker.questionResult = function(questionId, annotationid, response) {
 			var obj =  {
 				"questionResult": questionId,
 				"annotation": annotationid,
-				"result": result
+				"response": response
 			};
 
 			console.log("calling send event");

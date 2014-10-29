@@ -77,15 +77,54 @@ set the video time
 		);
 	}
 
+	function Questions(questions) {
+		var self = this;
+		questions.forEach(function(question) {
+			var q = JSON.parse(JSON.stringify(question));
+
+			question = new Question();
+
+			for (var p in q) {
+				question[p] = q[p];
+			}
+
+			self.push(question);
+		});
+
+		this.get = function(id) {
+			for (var i in this) {
+				var question = this[i];
+				if (question.id === id) {
+					return question;
+				}
+			}
+		}
+	}
+	Questions.prototype = Array.prototype;
+
+	function Question() {
+		this.isCorrect = function() {
+			if (typeof(this.correctAnswer) === "undefined") {
+				return;
+			}
+
+			return this.correctAnswer === this.response;
+		}
+		this.isNotCorrect = function() {
+			return !this.isCorrect();
+		}
+	}
+
+	function getJSONQuestion(question) {
+		return JSON.parse(JSON.stringify(question));
+	}
+
 	function questionResult(message, annotations) {
 		var questionId = message.questionResult;
 		var annotationId = message.annotation;
-		var result = message.result;
+		var response = message.response;
 
 		var annotation = annotations[annotationId];
-
-		console.log("annotation questions");
-		console.log(annotation.questions);
 
 		var question;
 		var questions = annotation.questions.slice(); // shallow copy
@@ -100,8 +139,11 @@ set the video time
 			if (question.id === questionId) {
 				// determine if any actions need to be performed
 
+				question.response = response;
+
 				if ("action" in question) {
-					question.action(result, {
+					var fq = new Questions(annotation.questions);
+					question.action(fq, {
 						setTime: function(time) {
 							postMessage({
 								setTime: time
@@ -131,8 +173,9 @@ set the video time
 			if ("condition" in question) {
 				var condition = question.condition;
 
-				// TOOD: Probably should give a deep copy of questions here
-				var conditionResult = condition(annotation.questions, result);
+				var fq = new Questions(annotation.questions);
+
+				var conditionResult = condition(fq);
 
 				if (!conditionResult) {
 					continue;
@@ -142,7 +185,7 @@ set the video time
 			// The parse and stringify is a crude but effective way of removing any
 			// functions in the object
 			postMessage({
-				"showQuestion": JSON.parse(JSON.stringify(question))
+				"showQuestion": getJSONQuestion(question)
 			});
 
 			return;

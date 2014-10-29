@@ -48,35 +48,108 @@ set the video time
 */
 
 (function() {
+  "use strict";
 
+	// update the list of annotations that the frontend has
 	function publishAnnotations(annotations) {
-		var thing = {
-			annotations:[]
+		var response = {
+			annotations: []
 		};
+
 		for (var id in annotations) {
-			thing.annotations.push({
+			response.annotations.push({
 				id: id,
 				time: annotations[id].time
 			});
 		}
 
-		postMessage(thing);
+		postMessage(response);
 	}
 
+	// called when the frontend reaches an annotation in the video
 	function annotationStart(message, annotations) {
-		id = message.annotationStart;
-
-		annotation = annotations[id];
+		var id = message.annotationStart;
+		var annotation = annotations[id];
 
 		var firstQuestion = annotation.questions[0];
 
-		postMessage(
-			{
-				showQuestion: firstQuestion
-			}
-		);
+		postMessage({
+			showQuestion: firstQuestion
+		});
 	}
 
+	// called when the user answers a question
+	function questionResult(message, annotations) {
+		var questionId = message.questionResult;
+		var annotationId = message.annotation;
+		var response = message.response;
+
+		var annotation = annotations[annotationId];
+
+		var question;
+		var questions = annotation.questions.slice(); // shallow copy
+
+		while (questions.length !== 0) {
+			question = questions.shift();
+
+			if (question.id === questionId) {
+				// attach the response given to the question, as this is used in the
+				// action and condition functions
+				question.response = response;
+
+				// determine if any actions need to be performed
+				if ("action" in question) {
+					question.action(new Questions(annotation.questions), video);
+				}
+
+				break;
+			}
+		}
+
+		if (questions.length === 0) {
+			postMessage({
+				"endAnnotation": annotationId
+			});
+
+			return;
+		}
+
+		// find the next question to display
+		while (questions.length !== 0) {
+			question = questions.shift();
+
+			if ("condition" in question) {
+				var conditionResult = question.condition(new Questions(annotation.questions));
+
+				if (!conditionResult) {
+					continue;
+				}
+			}
+
+			postMessage({
+				"showQuestion": getJSONQuestion(question)
+			});
+
+			return;
+		}
+
+		// if this point has been reached, the annotation has ended as all the
+		// conditions on the remaining questions evaluated to false.
+		postMessage({
+			"endAnnotation": annotationId
+		});
+	}
+
+	// video object passed to the action function
+	var video = {
+		setTime: function(time) {
+			postMessage({
+				setTime: time
+			});
+		}
+	}
+
+	// custom class used in the action and condition functions
 	function Questions(questions) {
 		var self = this;
 		questions.forEach(function(question) {
@@ -102,6 +175,7 @@ set the video time
 	}
 	Questions.prototype = Array.prototype;
 
+	// custom class used in the action and condition functions
 	function Question() {
 		this.isCorrect = function() {
 			if (typeof(this.correctAnswer) === "undefined") {
@@ -115,85 +189,11 @@ set the video time
 		}
 	}
 
+	// returns a representation of a question suitable for sending to the
+	// fronted. The message passing interface cannot send objects that contain
+	// functions.
 	function getJSONQuestion(question) {
 		return JSON.parse(JSON.stringify(question));
-	}
-
-	function questionResult(message, annotations) {
-		var questionId = message.questionResult;
-		var annotationId = message.annotation;
-		var response = message.response;
-
-		var annotation = annotations[annotationId];
-
-		var question;
-		var questions = annotation.questions.slice(); // shallow copy
-
-		while (questions.length !== 0) {
-			question = questions.shift();
-
-			console.log("looking at question " + question.id);
-
-			if (question.id === questionId) {
-				// determine if any actions need to be performed
-
-				question.response = response;
-
-				if ("action" in question) {
-					var fq = new Questions(annotation.questions);
-					question.action(fq, {
-						setTime: function(time) {
-							postMessage({
-								setTime: time
-							});
-						}
-					});
-				}
-
-				break;
-			}
-		}
-
-		console.log("checking for remaining questions");
-
-		if (questions.length === 0) {
-			console.log("no remaining questions");
-			postMessage({
-				"endAnnotation": annotationId
-			});
-
-			return;
-		}
-
-		while (questions.length !== 0) {
-			console.log("looking to determine the next question");
-
-			question = questions.shift();
-
-			if ("condition" in question) {
-				var condition = question.condition;
-
-				var fq = new Questions(annotation.questions);
-
-				var conditionResult = condition(fq);
-
-				if (!conditionResult) {
-					continue;
-				}
-			}
-
-			// The parse and stringify is a crude but effective way of removing any
-			// functions in the object
-			postMessage({
-				"showQuestion": getJSONQuestion(question)
-			});
-
-			return;
-		}
-
-		postMessage({
-			"endAnnotation": annotationId
-		});
 	}
 
 	self.loadAnnotations = function(annotations) {
@@ -207,8 +207,6 @@ set the video time
 		onmessage = function(e) {
 			var message = e.data;
 			var id, annotation;
-
-			console.log("message from page " + JSON.stringify(message));
 
 			for (var key in handlers) {
 				if (key in message) {

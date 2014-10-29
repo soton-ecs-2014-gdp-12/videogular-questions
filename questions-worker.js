@@ -130,8 +130,6 @@ set the video time
 		var questions = annotation.questions.slice(); // shallow copy
 
 		while (questions.length !== 0) {
-			console.log("looking to determine the next question");
-
 			question = questions.shift();
 
 			console.log("looking at question " + question.id);
@@ -168,6 +166,8 @@ set the video time
 		}
 
 		while (questions.length !== 0) {
+			console.log("looking to determine the next question");
+
 			question = questions.shift();
 
 			if ("condition" in question) {

@@ -12,8 +12,9 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			"setTime": []
 		};
 
-		webWorker.init = function(schema) {
+		webWorker.init = function(schema, pollServerURL) {
 			webWorker.worker = new Worker(schema);
+			webWorker.sendEvent({"config": pollServerURL});
 
 			webWorker.worker.addEventListener("message", function(e) {
 				var data = e.data;
@@ -372,7 +373,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					require: "^videogular",
 					scope: {
 						theme: "=vgQuestionsTheme",
-						questions: "=vgQuestionsData"
+						questions: "=vgQuestionsData",
+						pollServerUrl: "=vgPollServerUrl"
 					},
 					template: "<vg-annotation ng-show='shouldShow.annotation'></vg-annotation>",
 					link: function($scope, elem, attr, API) {
@@ -437,7 +439,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						$scope.init = function() {
 							$scope.shouldShow = {annotation : false};
 							updateTheme($scope.theme);
-							webWorker.init($scope.questions);
+							webWorker.init($scope.questions, {"pollServerUrl": $scope.pollServerUrl});
 							webWorker.addAnnotationsListUpdateCallback(
 								function(data){
 									console.log("I just got some new times to stop at");

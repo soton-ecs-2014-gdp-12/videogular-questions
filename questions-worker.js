@@ -1,6 +1,14 @@
 /*
 Events from videogular-questions
 
+sent at the beginning with general vg-questions config
+{
+	config: {
+		pollserverUrl: ...,
+		...
+	}
+} 
+
 sent when a particular annotation is reached in the video
 {
   annotationStart: annotationId
@@ -78,6 +86,21 @@ set the video time
 		});
 	}
 
+	function submitPollResult(response, annotationId, questionId) {
+		var xhr = new XMLHttpRequest();
+		var toSend = JSON.stringify({questionResult:questionId, annotation:annotationId, result:response});
+		console.log(toSend);
+		xhr.open("POST",self.pollServerUrl,true);
+		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		xhr.send(toSend);	
+	}
+
+	function configSet(configData) {
+		if(configData.config.pollServerUrl != undefined){
+			self.pollServerUrl = configData.config.pollServerUrl;
+		}
+	}
+
 	// called when the user answers a question
 	function questionResult(message, annotations) {
 		var questionId = message.questionResult;
@@ -96,6 +119,10 @@ set the video time
 				// attach the response given to the question, as this is used in the
 				// action and condition functions
 				question.response = response;
+
+				if (question.recordsResponse){
+					submitPollResult(response, annotationId, questionId);
+				}
 
 				// determine if any actions need to be performed
 				if ("action" in question) {
@@ -201,7 +228,8 @@ set the video time
 
 		var handlers = {
 			"annotationStart": annotationStart,
-			"questionResult": questionResult
+			"questionResult": questionResult,
+			"config": configSet
 		};
 
 		onmessage = function(e) {

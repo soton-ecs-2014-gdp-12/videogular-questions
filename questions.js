@@ -455,24 +455,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							}
 						);
 
-						function parseQuestionData(data) {
-							$http.get("bower_components/videogular-questions/schema.json").success(
-								function(schema) {
-									var cleanData = JSON.parse(angular.toJson(data));
-									var env = new jjv();
-									env.addSchema('s', schema);
-									var result = env.validate('s', data);
-
-									if (result !== null) {
-										console.warn("validation error");
-										console.log(result);
-									}
-
-									$scope.annotations = data;
-								}
-							);
-						}
-
 						function addCuepoints(annotationList) {
 							if (typeof $scope.cuepoints !== 'undefined') {
 								$scope.cuepoints.points = $scope.cuepoints.points || [];

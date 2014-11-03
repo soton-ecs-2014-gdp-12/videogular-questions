@@ -1,4 +1,5 @@
-/* global onmessage, postMessage, self, XMLHttpRequest */
+/* jshint worker: true */
+/* global XMLHttpRequest */
 /*
 Events from videogular-questions
 

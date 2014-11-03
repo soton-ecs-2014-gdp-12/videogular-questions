@@ -56,7 +56,12 @@ set the video time
 */
 
 (function() {
-  "use strict";
+	"use strict";
+
+	if (!console) {
+		var noop = function() {};
+		var console = { log: noop, info: noop, warn: noop, error: noop };
+	}
 
 	// update the list of annotations that the frontend has
 	function publishAnnotations(annotations) {

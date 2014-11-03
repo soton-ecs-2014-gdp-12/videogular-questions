@@ -58,11 +58,6 @@ set the video time
 (function() {
 	"use strict";
 
-	if (!console) {
-		var noop = function() {};
-		var console = { log: noop, info: noop, warn: noop, error: noop };
-	}
-
 	// update the list of annotations that the frontend has
 	function publishAnnotations(annotations) {
 		var response = {
@@ -94,7 +89,6 @@ set the video time
 	function submitPollResult(response, annotationId, questionId) {
 		var xhr = new XMLHttpRequest();
 		var toSend = JSON.stringify({questionResult:questionId, annotation:annotationId, result:response});
-		console.log(toSend);
 		xhr.open("POST",self.pollServerUrl,true);
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send(toSend);	

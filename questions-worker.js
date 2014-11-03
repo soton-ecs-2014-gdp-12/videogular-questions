@@ -1,3 +1,4 @@
+/* global onmessage, postMessage, self, XMLHttpRequest */
 /*
 Events from videogular-questions
 
@@ -82,7 +83,7 @@ set the video time
 		var firstQuestion = annotation.questions[0];
 
 		postMessage({
-			showQuestion: firstQuestion
+			showQuestion: firstQuestion,
 		});
 	}
 
@@ -91,11 +92,11 @@ set the video time
 		var toSend = JSON.stringify({questionResult:questionId, annotation:annotationId, result:response});
 		xhr.open("POST",self.pollServerUrl,true);
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		xhr.send(toSend);	
+		xhr.send(toSend);
 	}
 
 	function configSet(configData) {
-		if(configData.config.pollServerUrl != undefined){
+		if(typeof configData.config.pollServerUrl !== 'undefined'){
 			self.pollServerUrl = configData.config.pollServerUrl;
 		}
 	}
@@ -172,8 +173,8 @@ set the video time
 			postMessage({
 				setTime: time
 			});
-		}
-	}
+		},
+	};
 
 	// custom class used in the action and condition functions
 	function Questions(questions) {
@@ -197,7 +198,7 @@ set the video time
 					return question;
 				}
 			}
-		}
+		};
 	}
 	Questions.prototype = Array.prototype;
 
@@ -209,10 +210,10 @@ set the video time
 			}
 
 			return this.correctAnswer === this.response;
-		}
+		};
 		this.isNotCorrect = function() {
 			return !this.isCorrect();
-		}
+		};
 	}
 
 	// returns a representation of a question suitable for sending to the
@@ -231,7 +232,7 @@ set the video time
 			"config": configSet
 		};
 
-		onmessage = function(e) {
+		onmessage = function(e) {  // jshint ignore:line
 			var message = e.data;
 			var id, annotation;
 
@@ -242,5 +243,5 @@ set the video time
 				}
 			}
 		};
-	}
+	};
 })();

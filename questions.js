@@ -1,3 +1,4 @@
+/* jshint browser: true, devel: true */
 (function(){
 "use strict";
 angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts'])
@@ -23,33 +24,30 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 				for (var key in handlers) {
 					if (key in data) {
-						handlers[key].forEach(
-							function(callback){
-								callback(data);
-							}
-						);
-
+						for (var i in handlers[key]) {
+							handlers[key][i](data);
+						}
 						break;
 					}
 				}
 			} ,false);
-		}
+		};
 
 		webWorker.addAnnotationsListUpdateCallback = function(callback) {
 			handlers.annotations.push(callback);
-		}
+		};
 
 		webWorker.addEndAnnotationCallback = function(callback) {
 			handlers.endAnnotation.push(callback);
-		}
+		};
 
 		webWorker.addShowQuestionCallback = function(callback) {
 			handlers.showQuestion.push(callback);
-		}
+		};
 
 		webWorker.addSetTimeCallback = function(callback) {
 			handlers.setTime.push(callback);
-		}
+		};
 
 		webWorker.annotationStart = function(id) {
 			console.log("send annotation start");
@@ -57,7 +55,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 				"annotationStart": id
 			};
 			webWorker.sendEvent(obj);
-		}
+		};
 
 		webWorker.questionResult = function(questionId, annotationid, response) {
 			var obj =  {
@@ -68,14 +66,14 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 			console.log("calling send event");
 			webWorker.sendEvent(obj);
-		}
+		};
 
 		webWorker.sendEvent = function(obj) {
-			console.log("posting msg")
+			console.log("posting msg");
 			webWorker.worker.postMessage(obj);
-		}
+		};
 
-		return webWorker
+		return webWorker;
 	})
 	.directive(
 		"vgQuestionSubmit", ["VG_STATES",
@@ -144,7 +142,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							for (var i = $scope.questionData.options.length - 1; i >= 0; i--) {
 								if ($scope.questionData.options[i].chosen)
 									return false;
-							};
+							}
 							return true;
 						};
 

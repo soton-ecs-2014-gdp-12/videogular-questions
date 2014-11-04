@@ -76,8 +76,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		return webWorker;
 	})
 	.directive(
-		"vgQuestionSubmit", ["VG_STATES",
-			function(VG_EVENTS) {
+		"vgQuestionSubmit", [
+			function() {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -96,8 +96,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		]
 	)
 	.directive(
-		"vgQuestionSkip", ["VG_STATES",
-			function(VG_EVENTS) {
+		"vgQuestionSkip", [
+			function() {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -116,8 +116,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		]
 	)
 	.directive(
-		"vgQuestionMultiple", ["VG_STATES",
-			function(VG_EVENTS) {
+		"vgQuestionMultiple", [
+			function() {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -153,8 +153,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		]
 	)
 	.directive(
-		"vgQuestionSingle", ["VG_STATES",
-			function(VG_EVENTS) {
+		"vgQuestionSingle", [
+			function() {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -188,8 +188,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		]
 	)
 	.directive(
-	"vgQuestionStars", ["VG_STATES",
-		function(VG_EVENTS) {
+	"vgQuestionStars", [
+		function() {
 			return {
 				restrict: "E",
 				require: "^videogular",
@@ -228,8 +228,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	]
 )
 	.directive(
-	"vgQuestionText", ["VG_STATES",
-		function(VG_EVENTS) {
+	"vgQuestionText", [
+		function() {
 			return {
 				restrict: "E",
 				require: "^videogular",
@@ -264,8 +264,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 )
 
 	.directive(
-	"vgQuestionRange", ["VG_STATES",
-		function(VG_EVENTS) {
+	"vgQuestionRange", [
+		function() {
 			return {
 				restrict: "E",
 				require: "^videogular",
@@ -300,8 +300,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 )
 
 	.directive(
-		"vgResult", ["VG_STATES",
-			function(VG_EVENTS) {
+		"vgResult", [
+			function() {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -329,8 +329,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		]
 	)
 	.directive(
-		"vgQuestion", ["VG_STATES",
-			function(VG_EVENTS) {
+		"vgQuestion", [
+			function() {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -364,8 +364,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		]
 	)
 	.directive(
-		"vgAnnotation", ["VG_STATES",
-			function(VG_EVENTS) {
+		"vgAnnotation", [
+			function() {
 				return {
 					restrict: "E",
 					require: "^videogular",
@@ -400,8 +400,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		]
 	)
 	.directive(
-		"vgQuestions", ["VG_STATES", "$http", "webWorkerFactory",
-			function(VG_EVENTS, $http, webWorker) {
+		"vgQuestions", ["$http", "webWorkerFactory",
+			function($http, webWorker) {
 				return {
 					restrict: "E",
 					require: "^videogular",

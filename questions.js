@@ -236,7 +236,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 				$scope.init();
 			},
-		}
+		};
 	})
 	.directive("vgQuestionRange", function() {
 		return {

@@ -1,26 +1,17 @@
-<div class="my-layer">
+<vg-box header="Question:  {{questionData.question}}">
+	Select a rating from minimum {{questionData.min}} stars to maximum {{questionData.max}} stars: <br /><br />
 
-	<div id="question-header">
-		<h1>Question: {{questionData.question}}</h1>
+	<div id="stars_list" role="radiogroup">
+		<button data-ng-repeat="star in stars" ng-click="questionData.rating=star"
+			role="radio" aria-selected="{{questionData.rating == star}}" title="Rate {{star}} star"/>
+			{{(questionData.rating >= star) ? '&#x2605;' : '&#x2606;'}}
+		</button>
 	</div>
 
-	<div id="question-content">
-		<form name="myForm" >
-			Select a rating from minimum {{questionData.min}} stars to maximum {{questionData.max}} stars: <br /><br />
+	<br/>
 
-			<div id="stars_list" role="radiogroup">
-				<button data-ng-repeat="star in stars" ng-click="questionData.rating=star"
-					role="radio" aria-selected="{{questionData.rating == star}}" title="Rate {{star}} star"/>
-					{{(questionData.rating >= star) ? '&#x2605;' : '&#x2606;'}}
-				</button>
-			</div>
-
-			<br/>
-
-			<div id="button_group">
-			<vg-question-submit></vg-question-submit>
-			<vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
-			</div>
-		</form>
+	<div id="button_group">
+	<vg-question-submit></vg-question-submit>
+	<vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
 	</div>
-</div>
+</vg-box>

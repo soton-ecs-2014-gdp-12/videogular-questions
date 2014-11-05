@@ -412,4 +412,17 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			},
 		};
 	})
+
+	// General utility directives
+	.directive("vgBox", function() {
+		return {
+			restrict: "E",
+			require: "^videogular",
+			transclude: true,
+			scope: {
+				header: '@'
+			},
+			templateUrl: 'bower_components/videogular-questions/box.html'
+		};
+	})
 })();

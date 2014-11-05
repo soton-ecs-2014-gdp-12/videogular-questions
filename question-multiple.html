@@ -1,26 +1,17 @@
-<div class="my-layer">
+<vg-box header="Question: {{questionData.question}}">
+	Select at least {{questionData.min}} choices and at most {{questionData.max}} choices.
 
-	<div id="question-header">
-		<h1>Question: {{questionData.question}}</h1>
+	<div data-ng-repeat="option in questionData.options">
+	<label>
+		<input name="question-form" type="checkbox" ng-model="option.chosen" value="{{option.name}}"/>
+		{{ option.name }}
+	</label>
 	</div>
 
-	<div id="question-content">
-		<form name="myForm" >
-			Select at least {{questionData.min}} choices and at most {{questionData.max}} choices.
+	<br />
 
-			<div data-ng-repeat="option in questionData.options">
-			<label>
-				<input name="question-form" type="checkbox" ng-model="option.chosen" value="{{option.name}}"/>
-				{{ option.name }}
-			</label>
-			</div>
-
-			<br />
-
-			<div id="button_group">
-				<vg-question-submit></vg-question-submit>
-				<vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
-			</div>
-		</form>
+	<div id="button_group">
+		<vg-question-submit></vg-question-submit>
+		<vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
 	</div>
-</div>
+</vg-box>

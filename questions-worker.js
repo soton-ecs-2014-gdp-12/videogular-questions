@@ -81,7 +81,7 @@ set the video time
 		var id = message.annotationStart;
 		var annotation = annotations[id];
 
-		var firstQuestion = annotation.questions[0];
+		var firstQuestion = getJSONItem(annotation.items[0]);
 
 		postMessage({
 			showQuestion: firstQuestion,
@@ -103,18 +103,18 @@ set the video time
 	}
 
 	// called when the user answers a question
-	function questionResult(message, annotations) {
+	function itemResult(message, annotations) {
 		var type;
 		if("response" in message){
 			//questionResult
-			var questionId = message.questionResult;
+			var itemId = message.questionResult;
 			var annotationId = message.annotation;
 			var response = message.response;
 
 			type = "question";
 		}
 		else{
-			var questionId = message.resultFinished;
+			var itemId = message.resultFinished;
 			var annotationId = message.annotation;
 
 			type = "result";
@@ -122,33 +122,33 @@ set the video time
 
 		var annotation = annotations[annotationId];
 
-		var question;
-		var questions = annotation.questions.slice(); // shallow copy
+		var item;
+		var items = annotation.items.slice(); // shallow copy
 
-		while (questions.length !== 0) {
-			question = questions.shift();
+		while (items.length !== 0) {
+			item = items.shift();
 
-			if (question.id === questionId) {
+			if (item.id === itemId) {
 				if(type === "question"){
 					// attach the response given to the question, as this is used in the
 					// action and condition functions
-					question.response = response;
+					item.response = response;
 
-					if (question.recordsResponse){
-						submitPollResult(response, annotationId, questionId);
+					if (item.recordsResponse){
+						submitPollResult(response, annotationId, itemId);
 					}
 				}
 
 				// determine if any actions need to be performed
-				if ("action" in question) {
-					question.action(new Questions(annotation.questions), video);
+				if ("action" in item) {
+					item.action(new Questions(annotation.items), video);
 				}
 
 				break;
 			}
 		}
 
-		if (questions.length === 0) {
+		if (items.length === 0) {
 			postMessage({
 				"endAnnotation": annotationId
 			});
@@ -156,26 +156,26 @@ set the video time
 			return;
 		}
 
-		// find the next question to display
-		while (questions.length !== 0) {
-			question = questions.shift();
+		// find the next item to display
+		while (items.length !== 0) {
+			item = items.shift();
 
-			if ("condition" in question) {
-				var conditionResult = question.condition(new Questions(annotation.questions));
+			if ("condition" in item) {
+				var conditionResult = item.condition(new Questions(annotation.items));
 
 				if (!conditionResult) {
 					continue;
 				}
 			}
 
-			if("questionId" in question){
+			if("questionId" in item){
 				postMessage({
-					"showResults": getJSONQuestion(question)
+					"showResults": getJSONItem(item)
 				});
 			}
 			else{
 				postMessage({
-					"showQuestion": getJSONQuestion(question)
+					"showQuestion": getJSONItem(item)
 				});
 			}
 
@@ -183,7 +183,7 @@ set the video time
 		}
 
 		// if this point has been reached, the annotation has ended as all the
-		// conditions on the remaining questions evaluated to false.
+		// conditions on the remaining items evaluated to false.
 		postMessage({
 			"endAnnotation": annotationId
 		});
@@ -199,9 +199,9 @@ set the video time
 	};
 
 	// custom class used in the action and condition functions
-	function Questions(questions) {
+	function Questions(items) {
 		var self = this;
-		questions.forEach(function(question) {
+		items.forEach(function(question) {
 			var q = JSON.parse(JSON.stringify(question));
 
 			question = new Question();
@@ -238,11 +238,11 @@ set the video time
 		};
 	}
 
-	// returns a representation of a question suitable for sending to the
+	// returns a representation of a item suitable for sending to the
 	// fronted. The message passing interface cannot send objects that contain
 	// functions.
-	function getJSONQuestion(question) {
-		return JSON.parse(JSON.stringify(question));
+	function getJSONItem(item) {
+		return JSON.parse(JSON.stringify(item));
 	}
 
 	self.loadAnnotations = function(annotations) {
@@ -250,8 +250,8 @@ set the video time
 
 		var handlers = {
 			"annotationStart": annotationStart,
-			"questionResult": questionResult,
-			"resultFinished": questionResult,
+			"questionResult": itemResult,
+			"resultFinished": itemResult,
 			"config": configSet
 		};
 

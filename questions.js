@@ -72,6 +72,13 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			webWorker.sendEvent(obj);
 		};
 
+		webWorker.resultFinished = function(resultId, annotationId) {
+			webWorker.sendEvent({
+				resultFinished: resultId,
+				annotation: annotationId
+			});
+		}
+
 		webWorker.sendEvent = function(obj) {
 			console.log("posting msg");
 			webWorker.worker.postMessage(obj);
@@ -150,6 +157,14 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						"range": "<vg-question-range></vg-question-range>"
 					};
 
+					var resultsDirectives = {
+						"single": "<vg-results-single></vg-results-single>",
+						"multiple": "<vg-results-multiple></vg-results-multiple>",
+						"stars": "<vg-results-stars></vg-results-stars>",
+						"text": "<vg-results-text></vg-results-text>",
+						"range": "<vg-results-range></vg-results-range>"
+					};
+
 					$scope.init = function() {
 						$scope.shouldShow = {annotation : false};
 						updateTheme($scope.theme);
@@ -171,6 +186,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							function(data){
 								console.log("I just got some a question to show");
 								console.log(data);
+
+								elem.empty();
 
 								$scope.questionData = data.showQuestion;
 
@@ -197,8 +214,17 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						);
 						webWorker.addShowResultsCallback(
 							function(data){
-								console.log("I just got some a result to show");
+								console.log("I just got a results to show");
 								console.log(data);
+
+								elem.empty();
+
+								$scope.resultsData = data.showResults;
+
+								var directive = resultsDirectives[data.showResults.type];
+
+								var el = $compile(directive)($scope);
+								elem.append(el);
 							}
 						);
 					};
@@ -211,6 +237,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						function(args){
 						}
 					);
+
+					$scope.$on('continue', function(event, args){
+						webWorker.resultFinished($scope.resultsData.id, $scope.currentAnnotation);
+					});
 
 					$scope.init();
 				},
@@ -410,6 +440,43 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 				$scope.init();
 			},
+		};
+	})
+
+	// Results directives
+	.directive("vgResultsSingle", function() {
+		return {
+			restrict: "E",
+			require: "^videogular",
+			templateUrl: 'bower_components/videogular-questions/results-single.html',
+			link: function($scope, elem, attr, API) {
+
+				$scope.chartType = 'bar';
+
+				$scope.results = {
+					data: ["cheese", "fish"].map(function(option, i) {
+						return {
+							x: option,
+							y: [i + 2]
+						};
+					}),
+				};
+
+				$scope.onContinueClick = function(event){
+					$scope.$emit('continue');
+				};
+			},
+		};
+	})
+
+	// Utility directives for results
+	.directive("vgResultsContinue", function() {
+		return {
+			restrict: "E",
+			require: "^videogular",
+			scope: {
+			},
+			template: '<button class="btn btn-primary" type="button" ng-click="$parent.onContinueClick()">Continue</button>'
 		};
 	})
 

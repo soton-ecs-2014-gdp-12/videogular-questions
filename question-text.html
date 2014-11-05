@@ -1,12 +1,23 @@
-Textual Response:
+<div class="my-layer">
 
-<label>
-	<input name="question-form" type="text" ng-model="questionData.chosen"></label>
-</div>
+	<div id="question-header">
+		<h1>Question: {{questionData.question}}</h1>
+	</div>
 
-<br />
+	<div id="question-content">
+		<form name="myForm" >
+			Textual Response:
 
-<div id="button_group">
-	<vg-question-submit></vg-question-submit>
-	<vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
+			<label>
+				<input name="question-form" type="text" ng-model="questionData.chosen"></label>
+			</div>
+
+			<br />
+
+			<div id="button_group">
+				<vg-question-submit></vg-question-submit>
+				<vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
+			</div>
+		</form>
+	</div>
 </div>

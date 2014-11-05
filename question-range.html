@@ -1,16 +1,27 @@
-Choose slider value (min: {{questionData.min}}, max: {{questionData.max}}): <br />
+<div class="my-layer">
 
-<div style="text-align: center">
-	<label>
-		<input name="question-form" type="range" min="{{questionData.min}}" max="{{questionData.max}}" step="{{questionData.step}}" ng-model="questionData.chosen">
-	</label> <br />
-</div>
+	<div id="question-header">
+		<h1>Question: {{questionData.question}}</h1>
+	</div>
 
-</div>
+	<div id="question-content">
+		<form name="myForm" >
+			Choose slider value (min: {{questionData.min}}, max: {{questionData.max}}): <br />
 
-<br />
+			<div style="text-align: center">
+				<label>
+					<input name="question-form" type="range" min="{{questionData.min}}" max="{{questionData.max}}" step="{{questionData.step}}" ng-model="questionData.chosen">
+				</label> <br />
+			</div>
 
-<div id="button_group">
-	<vg-question-submit></vg-question-submit>
-	<vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
+			</div>
+
+			<br />
+
+			<div id="button_group">
+				<vg-question-submit></vg-question-submit>
+				<vg-question-skip ng-if="questionData.allowSkip"></vg-question-skip>
+			</div>
+		</form>
+	</div>
 </div>

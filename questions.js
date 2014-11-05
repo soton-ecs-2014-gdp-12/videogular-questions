@@ -79,8 +79,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 		return webWorker;
 	})
-	.directive("vgQuestions", ["$http", "webWorkerFactory",
-		function($http, webWorker) {
+	.directive("vgQuestions", ["$http", "$compile", "webWorkerFactory",
+		function($http, $compile, webWorker) {
 			return {
 				restrict: "E",
 				require: "^videogular",
@@ -90,7 +90,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					cuepoints: "=vgQuestionsCuepoints",
 					pollServerUrl: "=vgPollServerUrl"
 				},
-				template: "<vg-annotation ng-show='shouldShow.annotation'></vg-annotation>",
+				template: "",
 				link: function($scope, elem, attr, API) {
 
 					// shamelessly stolen from part of videogular's updateTheme function
@@ -142,10 +142,21 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						}
 					}
 
+					var questionDirectives = {
+						"single": "<vg-question-single></vg-question-single>",
+						"multiple": "<vg-question-multiple></vg-question-multiple>",
+						"stars": "<vg-question-stars></vg-question-stars>",
+						"text": "<vg-question-text></vg-question-text>",
+						"range": "<vg-question-range></vg-question-range>"
+					};
+
 					$scope.init = function() {
 						$scope.shouldShow = {annotation : false};
 						updateTheme($scope.theme);
-						webWorker.init($scope.questions, {"pollServerUrl": $scope.pollServerUrl});
+
+						webWorker.init($scope.questions, {
+							"pollServerUrl": $scope.pollServerUrl
+						});
 						webWorker.addAnnotationsListUpdateCallback(
 							function(data){
 								console.log("I just got some new times to stop at");
@@ -160,17 +171,21 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							function(data){
 								console.log("I just got some a question to show");
 								console.log(data);
-								$scope.shouldShow.annotation = true;
-								data.showQuestion.annotation = $scope.currentAnnotation;
-								$scope.$broadcast('showQuestion', data.showQuestion);
-								$scope.$apply();
+
+								$scope.questionData = data.showQuestion;
+
+								var directive = questionDirectives[data.showQuestion.type];
+
+								var el = $compile(directive)($scope);
+								elem.append(el);
 							}
 						);
 						webWorker.addEndAnnotationCallback(
 							function(data){
 								console.log("Ending the annotation");
-								$scope.shouldShow.annotation = false;
-								$scope.$apply();
+
+								elem.empty();
+
 								API.play();
 							}
 						);
@@ -188,24 +203,12 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						);
 					};
 
-					$scope.$on('submitted', 
-						function(event,args){
-							console.log('submitted');
-							console.log(args);
-							webWorker.questionResult(args.questionResult, args.annotation, args.result);
-						}
-					);
+					$scope.$on('submitted', function(event, args){
+						webWorker.questionResult($scope.questionData.id, $scope.currentAnnotation, args.result);
+					});
 
 					$scope.$on('skipped',
 						function(args){
-						}
-					);
-
-					$scope.$on('annotationEnd', 
-						function(event, args){
-							args.show = false;
-							args.shown = true;
-							API.play();
 						}
 					);
 
@@ -214,74 +217,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			};
 		}
 	])
-
-	// The annotation directive will show a question or a result depending on the
-	// data given
-	.directive("vgAnnotation", function() {
-		return {
-			restrict: "E",
-			require: "^videogular",
-			scope: {
-			},
-			templateUrl: "bower_components/videogular-questions/annotation.html",
-			link: function($scope, elem, attr, API) {
-
-				$scope.init = function() {
-					$scope.shouldShow = {question:false, result:false};
-				};
-
-				$scope.$on('showQuestion', 
-					function(event, args){
-						$scope.shouldShow.question = true;
-						$scope.questionData = args;
-					}
-				);
-
-				$scope.$on('submitted', 
-					function(event,args){
-						event.stopPropagation();
-						args.annotation = $scope.questionData.annotation;
-						$scope.$parent.$emit('submitted', args);
-					}
-				);
-
-				$scope.init();
-			},
-		};
-	})
-
-	// This directive will load the appropriate question directive
-	.directive("vgQuestion", function() {
-		return {
-			restrict: "E",
-			require: "^videogular",
-			scope: {
-			},
-			templateUrl: 'bower_components/videogular-questions/question.html',
-			link: function($scope, elem, attr, API) {
-
-				$scope.init = function() {
-				};
-
-				$scope.$on('showQuestion', 
-					function(event, args){
-						console.log(args);
-						$scope.questionData = args;
-					}
-				);
-
-				$scope.$on('submitted', 
-					function(event,args){
-						event.stopPropagation();
-						args.questionResult = $scope.questionData.id;
-						$scope.$parent.$emit('submitted', args);
-					}
-				);
-
-				$scope.init();
-			},
-		};
-	})
 
 	// Question type directives
 	.directive("vgQuestionMultiple", function() {
@@ -321,9 +256,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		return {
 			restrict: "E",
 			require: "^videogular",
-			scope: {
-				questionData: "=vgQuestionData",
-			},
 			templateUrl: 'bower_components/videogular-questions/question-single.html',
 			link: function($scope, elem, attr, API) {
 
@@ -480,31 +412,4 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			},
 		};
 	})
-
-	// TODO
-	.directive("vgResult", function() {
-		return {
-			restrict: "E",
-			require: "^videogular",
-			scope: {
-				resultData: "=vgResultData",
-			},
-			templateUrl: 'bower_components/videogular-questions/result.html',
-			link: function($scope, elem, attr, API) {
-
-				$scope.init = function() {
-				};
-
-				$scope.onSubmitClick = function(event){
-					$scope.$emit('submitted',{});
-				};
-
-				$scope.onSkipClick = function(event){
-					$scope.$emit('skipped');
-				};
-
-				$scope.init();
-			},
-		};
-	});
 })();

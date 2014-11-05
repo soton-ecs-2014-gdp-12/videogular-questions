@@ -19,11 +19,12 @@ sent when a question is answered
 {
   questionResult: questionId,
   annotation: annotationid
-  result: ...
+  response: ...
 }
 
 {
-  resultFinished: questionid|annotationid
+  resultFinished: resultid,
+  annotation: annotationid
 }
 
 Messages from the WebWorker
@@ -103,9 +104,21 @@ set the video time
 
 	// called when the user answers a question
 	function questionResult(message, annotations) {
-		var questionId = message.questionResult;
-		var annotationId = message.annotation;
-		var response = message.response;
+		var type;
+		if("response" in message){
+			//questionResult
+			var questionId = message.questionResult;
+			var annotationId = message.annotation;
+			var response = message.response;
+
+			type = "question";
+		}
+		else{
+			var questionId = message.resultFinished;
+			var annotationId = message.annotation;
+
+			type = "result";
+		}
 
 		var annotation = annotations[annotationId];
 
@@ -116,12 +129,14 @@ set the video time
 			question = questions.shift();
 
 			if (question.id === questionId) {
-				// attach the response given to the question, as this is used in the
-				// action and condition functions
-				question.response = response;
+				if(type === "question"){
+					// attach the response given to the question, as this is used in the
+					// action and condition functions
+					question.response = response;
 
-				if (question.recordsResponse){
-					submitPollResult(response, annotationId, questionId);
+					if (question.recordsResponse){
+						submitPollResult(response, annotationId, questionId);
+					}
 				}
 
 				// determine if any actions need to be performed
@@ -153,9 +168,16 @@ set the video time
 				}
 			}
 
-			postMessage({
-				"showQuestion": getJSONQuestion(question)
-			});
+			if("questionId" in question){
+				postMessage({
+					"showResults": getJSONQuestion(question)
+				});
+			}
+			else{
+				postMessage({
+					"showQuestion": getJSONQuestion(question)
+				});
+			}
 
 			return;
 		}
@@ -229,6 +251,7 @@ set the video time
 		var handlers = {
 			"annotationStart": annotationStart,
 			"questionResult": questionResult,
+			"resultFinished": questionResult,
 			"config": configSet
 		};
 

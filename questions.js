@@ -49,6 +49,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 			handlers.setTime.push(callback);
 		};
 
+		webWorker.addShowResultsCallback = function(callback) {
+			handlers.showResults.push(callback);
+		};
+
 		webWorker.annotationStart = function(id) {
 			console.log("send annotation start");
 			var obj = {
@@ -176,8 +180,12 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 								API.seekTime(data.setTime);
 							}
 						);
-
-						
+						webWorker.addShowResultsCallback(
+							function(data){
+								console.log("I just got some a result to show");
+								console.log(data);
+							}
+						);
 					};
 
 					$scope.$on('submitted', 

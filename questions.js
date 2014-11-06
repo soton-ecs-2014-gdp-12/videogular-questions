@@ -253,9 +253,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		return {
 			restrict: "E",
 			require: "^videogular",
-			scope: {
-				questionData: "=vgQuestionData",
-			},
 			templateUrl: 'bower_components/videogular-questions/question-multiple.html',
 			link: function($scope, elem, attr, API) {
 
@@ -263,7 +260,18 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 				};
 
 				$scope.onSubmitClick = function(event){
-					$scope.$emit('submitted');
+					var options = $scope.questionData.options;
+					var result = [];
+
+					options.forEach(function(option) {
+						if (option.chosen) {
+							result.push(option.name);
+						}
+					});
+
+					$scope.$emit('submitted', {
+						result: result
+					});
 				};
 
 				$scope.onSkipClick = function(event){

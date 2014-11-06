@@ -355,9 +355,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		return {
 			restrict: "E",
 			require: "^videogular",
-			scope: {
-				questionData: "=vgQuestionData",
-			},
 			templateUrl: 'bower_components/videogular-questions/question-text.html',
 			link: function($scope, elem, attr, API) {
 
@@ -386,9 +383,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		return {
 			restrict: "E",
 			require: "^videogular",
-			scope: {
-				questionData: "=vgQuestionData",
-			},
 			templateUrl: 'bower_components/videogular-questions/question-range.html',
 			link: function($scope, elem, attr, API) {
 

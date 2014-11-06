@@ -91,9 +91,22 @@ set the video time
 	function submitPollResult(response, annotationId, questionId) {
 		var xhr = new XMLHttpRequest();
 		var toSend = JSON.stringify({questionResult:questionId, annotation:annotationId, result:response});
-		xhr.open("POST",self.pollServerUrl,true);
+		xhr.open("POST",self.pollServerUrl + "vote" ,true);
 		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 		xhr.send(toSend);
+	}
+
+	function getPollResults(annotationId, questionId, callback) {
+		var xhr = new XMLHttpRequest();
+
+		var url = self.pollServerUrl + "results/" + annotationId + "/" + questionId;
+
+		xhr.onload = function() {
+			callback(JSON.parse(this.responseText));
+		}
+		xhr.open("GET", url, true);
+		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		xhr.send();
 	}
 
 	function configSet(configData) {
@@ -169,8 +182,35 @@ set the video time
 			}
 
 			if("questionId" in item){
-				postMessage({
-					"showResults": getJSONItem(item)
+				getPollResults(annotationId, item.questionId, function(results) {
+					console.log("results");
+					console.log(results);
+
+					var safeItem = getJSONItem(item)
+					safeItem.results = results;
+
+					var question = null;
+					for (var i in annotation.items) {
+						question = annotation.items[i];
+
+						if (question.id === item.questionId) {
+							break;
+						}
+					}
+
+					if (question.type === "single") {
+						question.options.forEach(function(option) {
+							if (!(option.name in results)) {
+								results[option.name] = 0;
+							}
+						});
+					}
+
+					safeItem.type = question.type;
+
+					postMessage({
+						"showResults": safeItem
+					});
 				});
 			}
 			else{

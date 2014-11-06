@@ -453,13 +453,16 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 				$scope.chartType = 'bar';
 
+				var data = [];
+				for (var x in $scope.resultsData.results) {
+					data.push({
+						x: x,
+						y: [$scope.resultsData.results[x]]
+					});
+				}
+
 				$scope.results = {
-					data: ["cheese", "fish"].map(function(option, i) {
-						return {
-							x: option,
-							y: [i + 2]
-						};
-					}),
+					data: data
 				};
 
 				$scope.onContinueClick = function(event){

@@ -322,9 +322,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		return {
 			restrict: "E",
 			require: "^videogular",
-			scope: {
-				questionData: "=vgQuestionData",
-			},
 			templateUrl: 'bower_components/videogular-questions/question-stars.html',
 			link: function($scope, elem, attr, API) {
 

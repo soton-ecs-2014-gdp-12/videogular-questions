@@ -252,9 +252,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.directive("vgQuestionMultiple", function() {
 		return {
 			restrict: "E",
-			require: "^videogular",
 			templateUrl: 'bower_components/videogular-questions/question-multiple.html',
-			link: function($scope, elem, attr, API) {
+			link: function($scope, elem, attr) {
 
 				$scope.init = function() {
 				};
@@ -293,9 +292,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.directive("vgQuestionSingle", function() {
 		return {
 			restrict: "E",
-			require: "^videogular",
 			templateUrl: 'bower_components/videogular-questions/question-single.html',
-			link: function($scope, elem, attr, API) {
+			link: function($scope, elem, attr) {
 
 				$scope.init = function() {
 				};
@@ -321,9 +319,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.directive("vgQuestionStars", function() {
 		return {
 			restrict: "E",
-			require: "^videogular",
 			templateUrl: 'bower_components/videogular-questions/question-stars.html',
-			link: function($scope, elem, attr, API) {
+			link: function($scope, elem, attr) {
 
 				$scope.init = function() {
 					var x = 1;
@@ -354,9 +351,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.directive("vgQuestionText", function() {
 		return {
 			restrict: "E",
-			require: "^videogular",
 			templateUrl: 'bower_components/videogular-questions/question-text.html',
-			link: function($scope, elem, attr, API) {
+			link: function($scope, elem, attr) {
 
 				$scope.init = function() {
 				};
@@ -382,9 +378,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.directive("vgQuestionRange", function() {
 		return {
 			restrict: "E",
-			require: "^videogular",
 			templateUrl: 'bower_components/videogular-questions/question-range.html',
-			link: function($scope, elem, attr, API) {
+			link: function($scope, elem, attr) {
 
 				$scope.init = function() {
 				};
@@ -412,11 +407,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.directive("vgQuestionSubmit", function() {
 		return {
 			restrict: "E",
-			require: "^videogular",
 			scope: {
 			},
 			template: '<button class="btn btn-primary" type="button" ng-disabled="$parent.onSubmitDisabled()" ng-click="$parent.onSubmitClick()">Submit</button>',
-			link: function($scope, elem, attr, API) {
+			link: function($scope, elem, attr) {
 
 				$scope.init = function() {
 				};
@@ -428,11 +422,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.directive("vgQuestionSkip", function() {
 		return {
 			restrict: "E",
-			require: "^videogular",
 			scope: {
 			},
 			template: '<button class="btn btn-primary" type="button" ng-click="$parent.onSkipClick()">Skip</button>',
-			link: function($scope, elem, attr, API) {
+			link: function($scope, elem, attr) {
 
 				$scope.init = function() {
 				};
@@ -446,9 +439,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.directive("vgResultsSingle", function() {
 		return {
 			restrict: "E",
-			require: "^videogular",
 			templateUrl: 'bower_components/videogular-questions/results-single.html',
-			link: function($scope, elem, attr, API) {
+			link: function($scope, elem, attr) {
 
 				$scope.chartType = 'bar';
 
@@ -475,7 +467,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.directive("vgResultsContinue", function() {
 		return {
 			restrict: "E",
-			require: "^videogular",
 			scope: {
 			},
 			template: '<button class="btn btn-primary" type="button" ng-click="$parent.onContinueClick()">Continue</button>'
@@ -486,7 +477,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.directive("vgBox", function() {
 		return {
 			restrict: "E",
-			require: "^videogular",
 			transclude: true,
 			scope: {
 				header: '@'

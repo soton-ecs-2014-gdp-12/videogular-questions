@@ -229,6 +229,15 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						);
 					};
 
+					$scope.$watch(
+						function() {
+							return $scope.questions;
+						},
+						function(newVal, oldVal) {
+							$scope.init();
+						}
+					);
+
 					$scope.$on('submitted', function(event, args){
 						webWorker.questionResult($scope.questionData.id, $scope.currentAnnotation, args.result);
 					});

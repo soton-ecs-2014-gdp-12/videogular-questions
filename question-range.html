@@ -1,15 +1,15 @@
 <vg-box header="Question: {{questionData.question}}">
-	Choose slider value (min: {{questionData.min}}, max: {{questionData.max}}): <br />
-
-	<div style="text-align: center">
-		<label>
-			<input name="question-form" type="range" min="{{questionData.min}}" max="{{questionData.max}}" step="{{questionData.step}}" ng-model="questionData.chosen">
-		</label> <br />
+	<div>
+		Choose slider value (min: {{questionData.min}}, max: {{questionData.max}}):
 	</div>
 
+	<div class="row" style="padding:0px">
+		<div class="col-md-4" style="padding:0px;"><div style="text-align: right; width:100%">{{questionData.min}}</div></div>
+		<div class="col-md-4" style="padding:0px;"><div style="text-align: center"><label><input name="question-form" type="range" min="{{questionData.min}}" max="{{questionData.max}}" step="{{questionData.step}}" ng-model="questionData.chosen"></label></div></div>
+		<div class="col-md-4" style="padding:0px;">{{questionData.max}}</div>
 	</div>
 
-	<br />
+	<div style="text-align: center; font-weight:bold;">{{questionData.chosen}}</div>
 
 	<div id="button_group">
 		<vg-question-submit></vg-question-submit>

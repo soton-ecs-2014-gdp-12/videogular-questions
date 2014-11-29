@@ -5,17 +5,19 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 	.factory("webWorkerFactory", function () {
 		var webWorker = {};
 
-		var handlers = {
-			"annotations": [],
-			"showQuestion": [],
-			"showResults": [],
-			"endAnnotation": [],
-			"setTime": []
-		};
+		var handlers;
 
 		webWorker.init = function(schema, pollServerURL) {
 			webWorker.worker = new Worker(schema);
 			webWorker.sendEvent({"config": pollServerURL});
+
+			handlers = {
+				"annotations": [],
+				"showQuestion": [],
+				"showResults": [],
+				"endAnnotation": [],
+				"setTime": []
+			};
 
 			webWorker.worker.addEventListener("message", function(e) {
 				var data = e.data;

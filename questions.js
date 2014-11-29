@@ -88,8 +88,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 		return webWorker;
 	})
-	.directive("vgQuestions", ["$http", "$compile", "webWorkerFactory",
-		function($http, $compile, webWorker) {
+	.directive("vgQuestions", ["$http", "$compile", "webWorkerFactory", "$rootScope",
+		function($http, $compile, webWorker, $rootScope) {
 			return {
 				restrict: "E",
 				require: "^videogular",
@@ -188,6 +188,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							function(data){
 								console.log("I just got some a question to show");
 								console.log(data);
+								$rootScope.$broadcast('analytics','show_question', data);
 
 								elem.empty();
 
@@ -202,7 +203,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						webWorker.addEndAnnotationCallback(
 							function(data){
 								console.log("Ending the annotation");
-
+								$rootScope.$broadcast('analytics','end_question', data);
 								elem.empty();
 
 								API.play();
@@ -218,6 +219,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							function(data){
 								console.log("I just got a results to show");
 								console.log(data);
+								$rootScope.$broadcast('analytics','show_results', data);
 
 								elem.empty();
 
@@ -241,6 +243,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					);
 
 					$scope.$on('submitted', function(event, args){
+						$rootScope.$broadcast('analytics','submitted_question', args);
 						webWorker.questionResult($scope.questionData.id, $scope.currentAnnotation, args.result);
 					});
 
@@ -250,6 +253,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 					);
 
 					$scope.$on('continue', function(event, args){
+						$rootScope.$broadcast('analytics','continue_question', args);
 						webWorker.resultFinished($scope.resultsData.id, $scope.currentAnnotation);
 					});
 

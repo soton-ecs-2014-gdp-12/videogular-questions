@@ -192,6 +192,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 								console.log("I just got some a question to show");
 								console.log(data);
 								$rootScope.$broadcast('analytics','show_question', data);
+								document.getElementsByTagName('vg-controls')[0].style.display = 'none';
 
 								elem.empty();
 
@@ -207,6 +208,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 							function(data){
 								console.log("Ending the annotation");
 								$rootScope.$broadcast('analytics','end_question', data);
+								document.getElementsByTagName('vg-controls')[0].style.display = '';
 								elem.empty();
 
 								API.play();

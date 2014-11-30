@@ -6,7 +6,7 @@ module.exports = function(config) {
     files : [
       'questions-worker-tests.js',
       {
-        pattern: 'tests/empty.js',
+        pattern: 'tests/*.js',
         included: false
       },
       {

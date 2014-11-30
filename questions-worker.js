@@ -119,15 +119,15 @@ set the video time
 	// called when the user answers a question
 	function itemResult(message, annotations) {
 		var type;
-		if("response" in message){
-			//questionResult
+
+		if ("response" in message) {
+			// questionResult
 			var itemId = message.questionResult;
 			var annotationId = message.annotation;
 			var response = message.response;
 
 			type = "question";
-		}
-		else{
+		} else {
 			var itemId = message.resultFinished;
 			var annotationId = message.annotation;
 
@@ -143,12 +143,12 @@ set the video time
 			item = items.shift();
 
 			if (item.id === itemId) {
-				if(type === "question"){
+				if (type === "question") {
 					// attach the response given to the question, as this is used in the
 					// action and condition functions
 					item.response = response;
 
-					if (item.recordsResponse){
+					if (item.recordsResponse) {
 						submitPollResult(response, annotationId, itemId);
 					}
 				}
@@ -182,7 +182,7 @@ set the video time
 				}
 			}
 
-			if("questionId" in item){
+			if ("questionId" in item) {
 				getPollResults(annotationId, item.questionId, function(results) {
 					console.log("results");
 					console.log(results);
@@ -213,8 +213,7 @@ set the video time
 						"showResults": safeItem
 					});
 				});
-			}
-			else{
+			} else {
 				postMessage({
 					"showQuestion": getJSONItem(item)
 				});

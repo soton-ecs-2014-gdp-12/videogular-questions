@@ -26,9 +26,10 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 				for (var key in handlers) {
 					if (key in data) {
-						for (var i in handlers[key]) {
-							handlers[key][i](data);
-						}
+						console.log(handlers[key]);
+						handlers[key].forEach(function(handler) {
+							handler(data);
+						});
 						break;
 					}
 				}

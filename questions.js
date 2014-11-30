@@ -168,9 +168,11 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						"range": "<vg-results-range></vg-results-range>"
 					};
 
-					$scope.init = function() {
+					var init = $scope.init = function() {
 						$scope.shouldShow = {annotation : false};
 						updateTheme($scope.theme);
+
+						shownAnnotations = {};
 
 						webWorker.init($scope.questions, {
 							"pollServerUrl": $scope.pollServerUrl
@@ -234,15 +236,6 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						);
 					};
 
-					$scope.$watch(
-						function() {
-							return $scope.questions;
-						},
-						function(newVal, oldVal) {
-							$scope.init();
-						}
-					);
-
 					$scope.$on('submitted', function(event, args){
 						$rootScope.$broadcast('analytics','submitted_question', args);
 						webWorker.questionResult($scope.questionData.id, $scope.currentAnnotation, args.result);
@@ -258,7 +251,14 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 						webWorker.resultFinished($scope.resultsData.id, $scope.currentAnnotation);
 					});
 
-					$scope.init();
+					$scope.$watch(
+						function() {
+							return $scope.questions;
+						},
+						function(newVal, oldVal) {
+							init();
+						}
+					);
 				},
 			};
 		}

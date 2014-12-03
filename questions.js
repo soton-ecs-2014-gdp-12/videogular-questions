@@ -162,10 +162,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 					var resultsDirectives = {
 						"single": "<vg-results-single></vg-results-single>",
-						"multiple": "<vg-results-multiple></vg-results-multiple>",
-						"stars": "<vg-results-stars></vg-results-stars>",
-						"text": "<vg-results-text></vg-results-text>",
-						"range": "<vg-results-range></vg-results-range>"
+						"multiple": "<vg-results-multiple></vg-results-multiple>"
 					};
 
 					var init = $scope.init = function() {
@@ -174,6 +171,7 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 						shownAnnotations = {};
 
+						console.log("sending poll server url "+ $scope.pollServerUrl);
 						webWorker.init($scope.questions, {
 							"pollServerUrl": $scope.pollServerUrl
 						});
@@ -236,7 +234,13 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 								$scope.resultsData = data.showResults;
 
-								var directive = resultsDirectives[data.showResults.type];
+								var type = data.showResults.type;
+
+								if (typeof(type) === "undefined" || !(type in resultsDirectives)) {
+									console.error("unknown results type " + type);
+								}
+
+								var directive = resultsDirectives[type];
 
 								var el = $compile(directive)($scope);
 								elem.append(el);
@@ -466,6 +470,33 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 		return {
 			restrict: "E",
 			templateUrl: 'bower_components/videogular-questions/results-single.html',
+			link: function($scope, elem, attr) {
+
+				$scope.chartType = 'bar';
+
+				var data = [];
+				for (var x in $scope.resultsData.results) {
+					data.push({
+						x: x,
+						y: [$scope.resultsData.results[x]]
+					});
+				}
+
+				$scope.results = {
+					data: data
+				};
+
+				$scope.onContinueClick = function(event){
+					$scope.$emit('continue');
+				};
+			},
+		};
+	})
+
+	.directive("vgResultsMultiple", function() {
+		return {
+			restrict: "E",
+			templateUrl: 'bower_components/videogular-questions/results-multiple.html',
 			link: function($scope, elem, attr) {
 
 				$scope.chartType = 'bar';

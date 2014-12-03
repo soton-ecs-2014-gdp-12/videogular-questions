@@ -82,11 +82,7 @@ set the video time
 		var id = message.annotationStart;
 		var annotation = annotations[id];
 
-		var firstQuestion = getJSONItem(annotation.items[0]);
-
-		postMessage({
-			showQuestion: firstQuestion,
-		});
+		showNextItem(null, id, annotations);
 	}
 
 	function submitPollResult(response, annotationId, questionId) {
@@ -118,47 +114,51 @@ set the video time
 
 	// called when the user answers a question
 	function itemResult(message, annotations) {
-		var type;
+		var previousItem = {};
+
+		var annotationId = message.annotation;
 
 		if ("response" in message) {
 			// questionResult
-			var itemId = message.questionResult;
-			var annotationId = message.annotation;
-			var response = message.response;
-
-			type = "question";
+			previousItem.id = message.questionResult;
+			previousItem.response = message.response;
+			previousItem.type = "question";
 		} else {
-			var itemId = message.resultFinished;
-			var annotationId = message.annotation;
-
-			type = "result";
+			previousItem.id = message.resultFinished;
+			previousItem.type = "result";
 		}
 
+		showNextItem(previousItem, annotationId, annotations);
+	}
+
+	function showNextItem(previousItem, annotationId, annotations) {
 		var annotation = annotations[annotationId];
 
 		var item;
 		var items = annotation.items.slice(); // shallow copy
 
-		while (items.length !== 0) {
-			item = items.shift();
+		if (previousItem !== null) {
+			while (items.length !== 0) {
+				item = items.shift();
 
-			if (item.id === itemId) {
-				if (type === "question") {
-					// attach the response given to the question, as this is used in the
-					// action and condition functions
-					item.response = response;
+				if (item.id === previousItem.id) {
+					if (previousItem.type === "question") {
+						// attach the response given to the question, as this is used in the
+						// action and condition functions
+						item.response = previousItem.response;
 
-					if (item.recordsResponse) {
-						submitPollResult(response, annotationId, itemId);
+						if (item.recordsResponse) {
+							submitPollResult(previousItem.response, annotationId, previousItem.id);
+						}
 					}
-				}
 
-				// determine if any actions need to be performed
-				if ("action" in item) {
-					item.action(new Questions(annotation.items), video);
-				}
+					// determine if any actions need to be performed
+					if ("action" in item) {
+						item.action(new Questions(annotation.items), video);
+					}
 
-				break;
+					break;
+				}
 			}
 		}
 
@@ -191,12 +191,21 @@ set the video time
 					safeItem.results = results;
 
 					var question = null;
-					for (var i in annotation.items) {
-						question = annotation.items[i];
+					outerLoop:
+					for (var a in annotations) {
+						var searchAnnotation = annotations[a];
+						for (var i in searchAnnotation.items) {
+							var testQuestion = searchAnnotation.items[i];
 
-						if (question.id === item.questionId) {
-							break;
+							if (testQuestion.id === item.questionId) {
+								question = testQuestion;
+								break outerLoop;
+							}
 						}
+					}
+
+					if (question === null) {
+						console.error("could not find question with id " + item.questionId);
 					}
 
 					if (question.type === "single") {
@@ -205,6 +214,14 @@ set the video time
 								results[option.name] = 0;
 							}
 						});
+					} else if (question.type === "multiple") {
+						question.options.forEach(function(option) {
+							if (!(option.name in results)) {
+								results[option.name] = 0;
+							}
+						});
+					} else {
+						console.error("unhandled results type " + question.type);
 					}
 
 					safeItem.type = question.type;

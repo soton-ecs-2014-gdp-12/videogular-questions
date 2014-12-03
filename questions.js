@@ -251,6 +251,8 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 					$scope.$on('skipped',
 						function(args){
+						$rootScope.$broadcast('analytics','skipped_question', args);
+						webWorker.questionResult($scope.questionData.id, $scope.currentAnnotation, "skipped");
 						}
 					);
 

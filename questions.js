@@ -308,11 +308,22 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 				};
 
 				$scope.onSubmitDisabled = function(event){
-					for (var i = $scope.questionData.options.length - 1; i >= 0; i--) {
-						if ($scope.questionData.options[i].chosen)
-							return false;
+
+					var numberChosen = 0;
+
+					for(var i = 0; i < $scope.questionData.options.length; i++) {
+						if($scope.questionData.options[i].chosen) {
+							numberChosen++;
+						}
 					}
-					return true;
+
+					if(numberChosen < $scope.questionData.min) {
+						return true;
+					}else if(numberChosen > $scope.questionData.max) {
+						return true;
+					}else{
+						return false;
+					}
 				};
 
 				$scope.init();

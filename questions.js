@@ -382,7 +382,13 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 				};
 
 				$scope.onSubmitDisabled = function(event){
-					return $scope.questionData.rating === 0;
+					if($scope.questionData.rating < $scope.questionData.min) {
+						return true;
+					}else if($scope.questionData.rating > $scope.questionData.max) {
+						return true;
+					}else{
+						return false;
+					}
 				};
 
 				$scope.init();

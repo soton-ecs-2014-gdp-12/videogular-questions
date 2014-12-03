@@ -198,7 +198,13 @@ angular.module("uk.ac.soton.ecs.videogular.plugins.questions", ['angularCharts']
 
 								$scope.questionData = data.showQuestion;
 
-								var directive = questionDirectives[data.showQuestion.type];
+								var type = data.showQuestion.type;
+
+								if (typeof(type) === "undefined" || !(type in questionDirectives)) {
+									console.error("unknown question type " + type);
+								}
+
+								var directive = questionDirectives[type];
 
 								var el = $compile(directive)($scope);
 								elem.append(el);

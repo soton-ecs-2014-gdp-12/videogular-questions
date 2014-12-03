@@ -1,5 +1,9 @@
 <vg-box header="Question Results">
 
+	Question: {{ resultsData.question }}
+
+	Correct Answers: {{ resultsData.correctAnswer }}
+
 	<div id="chart" style="width: 100%; height: 200px;" class="chart" ac-chart="chartType" ac-data="results" ac-config="chartConfig"></div>
 
 	<vg-results-continue></vg-results-continue>

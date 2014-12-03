@@ -214,17 +214,22 @@ set the video time
 								results[option.name] = 0;
 							}
 						});
+
+						safeItem.correctAnswer = question.correctAnswer;
 					} else if (question.type === "multiple") {
 						question.options.forEach(function(option) {
 							if (!(option.name in results)) {
 								results[option.name] = 0;
 							}
 						});
+
+						safeItem.correctAnswer = question.correctAnswer;
 					} else {
 						console.error("unhandled results type " + question.type);
 					}
 
 					safeItem.type = question.type;
+					safeItem.question = question.question;
 
 					postMessage({
 						"showResults": safeItem

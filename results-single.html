@@ -1,8 +1,10 @@
 <vg-box header="Question Results">
 
-	Question: {{ resultsData.question }}
+	<strong>Question:</strong> {{ resultsData.question }}
 
-	Correct Answer: {{ resultsData.correctAnswer }}
+	<div ng-show="resultsData.correctAnswer">
+		<strong>Correct Answer:</strong> {{ resultsData.correctAnswer }}
+	</div>
 
 	<div id="chart" style="width: 100%; height: 200px;" class="chart" ac-chart="chartType" ac-data="results" ac-config="chartConfig"></div>
 

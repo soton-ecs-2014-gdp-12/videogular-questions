@@ -2,6 +2,9 @@
   "name": "videogular-questions",
   "version": "0.4.0",
   "authors": [
+    "Christopher Baines <cb15g11@soton.ac.uk>",
+    "Christopher Hewett <chewett@hotmail.co.uk>",
+    "Harry Cutts <eternal.linux@gmail.com>",
     "Samuel Bennett <sb21g11@soton.ac.uk>"
   ],
   "description": "A quiz and poll overlay for Videogular",
